@@ -134,9 +134,9 @@ public class TableStoreService implements ITableStoreService {
 		clientConfiguration.setSocketTimeoutInMillisecond(5000);
 		// 设置重试策略，若不设置，采用默认的重试策略�?
 		clientConfiguration.setRetryStrategy(new AlwaysRetryStrategy());
-		//TODO 
-//		client = new SyncClient(Global.TS_ENDPOINT, Global.ALIYUN_ACCESS_KEY, Global.ALIYUN_SECRET_KEY,
-//				Global.TS_INSTANCENAME, clientConfiguration);
+		// TODO
+		client = new SyncClient(Config.get("TS_ENDPOINT"), Config.get("ALIYUN_ACCESS_KEY"),
+				Config.get("ALIYUN_SECRET_KEY"), Config.get("TS_INSTANCENAME"), clientConfiguration);
 
 		return false;
 	}
