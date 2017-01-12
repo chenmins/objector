@@ -5,11 +5,19 @@ package org.chenmin.open.objector.test;
 
 import static org.junit.Assert.*;
 
+import org.chenmin.open.objector.ITableStoreService;
+import org.chenmin.open.objector.IUserObject;
+import org.chenmin.open.objector.IUserService;
+import org.chenmin.open.objector.ServiceModule;
+import org.chenmin.open.objector.UserObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * @author chenmin
@@ -17,11 +25,23 @@ import org.junit.Test;
  */
 public class TestUserService {
 
+	private static Injector injector;
+	private static ITableStoreService tss;
+	private static IUserService userService;
+
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+
+		injector = Guice.createInjector(new ServiceModule());
+		tss = injector.getInstance(ITableStoreService.class);
+		IUserObject userObject = new UserObject();
+		if (!tss.exsit(userObject)) {
+			tss.createTable(userObject);
+		}
+		userService = injector.getInstance(IUserService.class);
 	}
 
 	/**
@@ -47,7 +67,17 @@ public class TestUserService {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		IUserObject userObject = new UserObject();
+		String openid = "chenmin";
+		String passwd = "12345678";
+		userObject.setOpenid(openid);
+		userObject.setPasswd(passwd);
+		assertTrue(userService.save(userObject));
+		IUserObject t = new UserObject();
+		t.setOpenid(openid);
+		assertTrue(userService.get(t));
+		assertEquals(t.getPasswd(), passwd);
+		//fail("Not yet implemented");
 	}
 
 }
