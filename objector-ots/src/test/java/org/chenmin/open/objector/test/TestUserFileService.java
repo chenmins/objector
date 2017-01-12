@@ -3,7 +3,7 @@ package org.chenmin.open.objector.test;
 import org.chenmin.open.objector.IUserFileObject;
 import org.chenmin.open.objector.Objector;
 import org.chenmin.open.objector.ServiceModule;
-import org.chenmin.open.objector.UserFileObject;
+import org.chenmin.open.objector.UserFile;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -36,7 +36,7 @@ public class TestUserFileService {
 
 	@Test
 	public void test() {
-		IUserFileObject  u = (IUserFileObject) objector.create(UserFileObject.class);
+		IUserFileObject  u = (IUserFileObject) objector.createObject(UserFile.class);
 		System.out.println("table:"+u.getTablename());
 //		fail("Not yet implemented");
 	}

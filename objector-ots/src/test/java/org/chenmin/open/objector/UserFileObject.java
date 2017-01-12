@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.chenmin.open.objector.annotation.Entity;
-@Entity(name="UserFileObject1")
 public class UserFileObject implements IUserFileObject, Serializable {
 
 	/**
@@ -28,19 +26,18 @@ public class UserFileObject implements IUserFileObject, Serializable {
 	@Override
 	public void setPrimaryKeyValue(Map<String, PrimaryKeyValueObject> v) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void setColumnValue(Map<String, ColumnValueObject> v) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public String getTablename() {
-		// TODO Auto-generated method stub
-		return null;
+		return "1234";
 	}
 
 	@Override
@@ -48,6 +45,5 @@ public class UserFileObject implements IUserFileObject, Serializable {
 		// TODO Auto-generated method stub
 		return null;
 	}
- 
 
 }
