@@ -34,6 +34,9 @@ public class OtsObjector implements Objector {
 	@Override
 	public IStoreTableRow createObject(Class<? extends Serializable> c) {
 		Entity entity = c.getAnnotation(Entity.class);
+		System.out.println(c.getPackage().getName());
+		System.out.println(c.getCanonicalName());
+		System.out.println(c.getSimpleName());
 		System.out.println(entity);
 		Field[] fields = c.getDeclaredFields();
 		List<Field> result = new ArrayList<Field>();
@@ -70,7 +73,7 @@ public class OtsObjector implements Objector {
 		}
 		ClassPool pool = ClassPool.getDefault();
 		try {
-			CtClass cc = pool.get(entity.name());
+			CtClass cc = pool.get(c.getPackage().getName()+"."+entity.name());
 			Class<?> clazz = cc.toClass();
 			Object obj = clazz.newInstance();
 			return (IStoreTableRow) obj;

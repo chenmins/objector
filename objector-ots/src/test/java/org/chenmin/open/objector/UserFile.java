@@ -6,7 +6,7 @@ import org.chenmin.open.objector.annotation.Column;
 import org.chenmin.open.objector.annotation.Entity;
 import org.chenmin.open.objector.annotation.Key;
 
-@Entity(name = "org.chenmin.open.objector.UserFileObject")
+@Entity(name = "UserFileObject")
 public class UserFile implements Serializable {
 
 	/**
