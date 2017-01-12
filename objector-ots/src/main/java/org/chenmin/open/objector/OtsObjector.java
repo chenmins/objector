@@ -1,8 +1,10 @@
 package org.chenmin.open.objector;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -15,6 +17,7 @@ import org.chenmin.open.objector.annotation.Key;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.NotFoundException;
 
 public class OtsObjector implements Objector {
@@ -72,22 +75,44 @@ public class OtsObjector implements Objector {
 			}
 		}
 		ClassPool pool = ClassPool.getDefault();
+
 		try {
-			CtClass cc = pool.get(c.getPackage().getName()+"."+entity.name());
-			Class<?> clazz = cc.toClass();
+			// 创建一个类
+			CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." + entity.name() + "1");
+			// parent
+			CtClass ctParent = pool.get(StoreTableRow.class.getName());
+			ctClass.setSuperclass(ctParent);
+
+			CtMethod[] mts = ctParent.getMethods();
+			for (CtMethod method : mts) {
+				if(method.getName().equals("getTablename")){
+					//tablename
+					CtMethod method2 = new CtMethod(method.getReturnType(), method.getName(), method.getParameterTypes(), ctClass);
+					method2.setModifiers(Modifier.PUBLIC);
+					method2.setBody("{return \""+entity.name()+"\";}");
+					ctClass.addMethod(method2);
+				}
+			}
+//			// 为类设置方法
+//			CtMethod method = new CtMethod(CtClass.voidType, "run", null, ctClass);
+//			method.setModifiers(Modifier.PUBLIC);
+//			method.setBody("{System.out.println(\"执行结果\");}");
+//			ctClass.addMethod(method);
+
+//			CtClass cc = pool.get(c.getPackage().getName() + "." + entity.name());
+			Class<?> clazz = ctClass.toClass();
 			Object obj = clazz.newInstance();
+			ctClass.writeFile("e:\\tw");
 			return (IStoreTableRow) obj;
 		} catch (NotFoundException e) {
-			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		} catch (InstantiationException e) {
-			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO 自动生成的 catch 块
 			e.printStackTrace();
 		} catch (CannotCompileException e) {
-			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;

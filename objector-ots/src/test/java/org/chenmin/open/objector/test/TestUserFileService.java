@@ -1,6 +1,6 @@
 package org.chenmin.open.objector.test;
 
-import org.chenmin.open.objector.IUserFileObject;
+import org.chenmin.open.objector.IStoreTableRow;
 import org.chenmin.open.objector.Objector;
 import org.chenmin.open.objector.ServiceModule;
 import org.chenmin.open.objector.UserFile;
@@ -36,7 +36,7 @@ public class TestUserFileService {
 
 	@Test
 	public void test() {
-		IUserFileObject  u = (IUserFileObject) objector.createObject(UserFile.class);
+		IStoreTableRow  u =  objector.createObject(UserFile.class);
 		System.out.println("table:"+u.getTablename());
 //		fail("Not yet implemented");
 	}
