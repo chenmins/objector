@@ -1,4 +1,4 @@
-package org.chenmin.open;
+package org.chenmin.open.objector;
 
 import org.chenmin.open.objector.IStoreTable;
 import org.chenmin.open.objector.IStoreTableRow;

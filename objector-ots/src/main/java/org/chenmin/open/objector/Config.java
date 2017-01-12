@@ -1,4 +1,4 @@
-package org.chenmin.open;
+package org.chenmin.open.objector;
 
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;

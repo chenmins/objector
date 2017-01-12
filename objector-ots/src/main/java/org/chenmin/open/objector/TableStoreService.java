@@ -1,4 +1,4 @@
-package org.chenmin.open;
+package org.chenmin.open.objector;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -115,9 +115,9 @@ public class TableStoreService implements ITableStoreService {
 				}
 			}
 		}
-		// 数据的过期时�? 单位�? -1代表永不过期. 假如设置过期时间为一�? 即为 365 * 24 * 3600.
+		// 数据的过期时�? 单位�? -1代表永不过期. 假如设置过期时间为一�? 即为 365 * 24 * 3600.
 		int timeToLive = -1;
-		// 保存的最大版本数, 设置�?即代表每列上�?��保存3个最新的版本.
+		// 保存的最大版本数, 设置�?即代表每列上�?��保存3个最新的版本.
 		int maxVersions = 1;
 		TableOptions tableOptions = new TableOptions(timeToLive, maxVersions);
 		CreateTableRequestEx request = new CreateTableRequestEx(tableMeta, tableOptions);
@@ -128,11 +128,11 @@ public class TableStoreService implements ITableStoreService {
 	@Override
 	public boolean init() {
 		ClientConfiguration clientConfiguration = new ClientConfiguration();
-		// 设置建立连接的超时时间�?
+		// 设置建立连接的超时时间�?
 		clientConfiguration.setConnectionTimeoutInMillisecond(5000);
-		// 设置socket超时时间�?
+		// 设置socket超时时间�?
 		clientConfiguration.setSocketTimeoutInMillisecond(5000);
-		// 设置重试策略，若不设置，采用默认的重试策略�?
+		// 设置重试策略，若不设置，采用默认的重试策略�?
 		clientConfiguration.setRetryStrategy(new AlwaysRetryStrategy());
 		// TODO
 		client = new SyncClient(Config.get("TS_ENDPOINT"), Config.get("ALIYUN_ACCESS_KEY"),
@@ -190,7 +190,7 @@ public class TableStoreService implements ITableStoreService {
 	}
 
 	private PrimaryKey buildKey(Map<String, PrimaryKeyValueObject> primaryKey) {
-		// 构�?主键
+		// 构�?主键
 		PrimaryKeyBuilder primaryKeyBuilder = PrimaryKeyBuilder.createPrimaryKeyBuilder();
 		for (String pk : primaryKey.keySet()) {
 			PrimaryKeyValueObject pkv = primaryKey.get(pk);
@@ -215,9 +215,9 @@ public class TableStoreService implements ITableStoreService {
 	@Override
 	public boolean getRow(IStoreTableRow row) {
 		PrimaryKey primaryKeys = buildKey(row.getPrimaryKeyValue());
-		// 读一�?
+		// 读一�?
 		SingleRowQueryCriteria criteria = new SingleRowQueryCriteria(row.getTablename(), primaryKeys);
-		// 设置读取�?��版本
+		// 设置读取�?��版本
 		criteria.setMaxVersions(1);
 		GetRowResponse getRowResponse = client.getRow(new GetRowRequest(criteria));
 		if (getRowResponse == null)
