@@ -68,8 +68,9 @@ public class TestUserService {
 	@Test
 	public void test() {
 		IUserObject userObject = new UserObject();
-		String openid = "chenmin";
+		String openid = "chenmintest";
 		String passwd = "12345678";
+		String passwd2 = "12";
 		userObject.setOpenid(openid);
 		userObject.setPasswd(passwd);
 		assertTrue(userService.save(userObject));
@@ -77,7 +78,19 @@ public class TestUserService {
 		t.setOpenid(openid);
 		assertTrue(userService.get(t));
 		assertEquals(t.getPasswd(), passwd);
-		//fail("Not yet implemented");
+		IUserObject u = new UserObject();
+		u.setOpenid(openid);
+		u.setPasswd(passwd2);
+		assertTrue(userService.update(u));
+		t = new UserObject();
+		t.setOpenid(openid);
+		assertTrue(userService.get(t));
+		assertEquals(t.getPasswd(), passwd2);
+		t = new UserObject();
+		t.setOpenid(openid);
+		assertTrue(userService.del(t));
+		assertEquals(t.getColumnValue().size(), 0);
+
 	}
 
 }

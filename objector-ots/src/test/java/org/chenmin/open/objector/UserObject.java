@@ -101,7 +101,8 @@ public class UserObject implements IUserObject, Serializable {
 	@Override
 	public Map<String, ColumnValueObject> getColumnValue() {
 		Map<String, ColumnValueObject> m = new LinkedHashMap<String, ColumnValueObject>();
-		m.put("passwd", new ColumnValueObject(this.passwd, ColumnTypeObject.STRING));
+		if (this.passwd != null)
+			m.put("passwd", new ColumnValueObject(this.passwd, ColumnTypeObject.STRING));
 		for (String key : attrs.keySet()) {
 			m.put(key, new ColumnValueObject(attrs.get(key), ColumnTypeObject.STRING));
 		}
@@ -115,7 +116,8 @@ public class UserObject implements IUserObject, Serializable {
 
 	@Override
 	public void setColumnValue(Map<String, ColumnValueObject> v) {
-		this.passwd = v.get("passwd").getValue().toString();
+		if (v.containsKey("passwd"))
+			this.passwd = v.get("passwd").getValue().toString();
 		for (String key : v.keySet()) {
 			attrs.put(key, v.get(key).getValue());
 		}
