@@ -1,11 +1,11 @@
 package org.chenmin.open.objector;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +21,8 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 
 public class OtsObjector implements Objector {
+	
+	private static HashMap<String,CtClass > classMap = new HashMap<String,CtClass >();
 
 	@Override
 	public IStoreTableRow create(Class<? extends IStoreTableRow> c) {
@@ -36,6 +38,37 @@ public class OtsObjector implements Objector {
 
 	@Override
 	public IStoreTableRow createObject(Class<? extends Serializable> c) {
+//		System.out.println("createObject:"+c.getName());
+		CtClass ctClass = null;
+		Class<?> clazz = null;
+		try {
+			if(!classMap.containsKey(c.getName())){
+				ctClass = createEntity(c);
+				classMap.put(c.getName(), ctClass);
+				clazz = ctClass.toClass();
+			}else{
+				ctClass = classMap.get(c.getName());
+//				System.out.println("ctClass.getName():"+ctClass.getName());
+//				ClassPool pool = ClassPool.getDefault();
+//				ctClass = pool.get(ctClass.getName());
+//				clazz = ctClass.getClass();
+				clazz =Class.forName(ctClass.getName());
+			}
+			Object obj = clazz.newInstance();
+			return (IStoreTableRow) obj;
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (CannotCompileException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private CtClass createEntity(Class<? extends Serializable> c) {
 		Entity entity = c.getAnnotation(Entity.class);
 		Field[] fields = c.getDeclaredFields();
 		List<Field> result = new ArrayList<Field>();
@@ -43,6 +76,7 @@ public class OtsObjector implements Objector {
 		List<Column> columns = new LinkedList<Column>();
 		LinkedHashMap<Field, Key> refKey = new LinkedHashMap<Field, Key>();
 		LinkedHashMap<Field, Column> refColumn = new LinkedHashMap<Field, Column>();
+		LinkedHashMap<Key,Field> refField = new LinkedHashMap<Key,Field>();
 		for (Field field : fields) {
 			Key annotationKey = field.getAnnotation(Key.class);
 			if (annotationKey != null) {
@@ -52,6 +86,7 @@ public class OtsObjector implements Objector {
 				} else {
 					keys.add(annotationKey);
 				}
+				refField.put(annotationKey,field);
 				refKey.put(field, annotationKey);
 			}
 			Column annotationColumn = field.getAnnotation(Column.class);
@@ -63,9 +98,9 @@ public class OtsObjector implements Objector {
 		}
 		ClassPool pool = ClassPool.getDefault();
 
+		// 创建一个类
+		CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." + entity.name() + "Gen");
 		try {
-			// 创建一个类
-			CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." + entity.name() + "1");
 			// parent
 			CtClass ctParent = pool.get(c.getName());
 			ctClass.setSuperclass(ctParent);
@@ -91,7 +126,11 @@ public class OtsObjector implements Objector {
 						sb.append("{");
 						sb.append("java.util.List  pk = new java.util.ArrayList ();");
 						for(Key annotationKey :keys){
-							sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+annotationKey.name()+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
+							String name = annotationKey.name();
+							Field f = refField.get(annotationKey);
+							if(name.isEmpty())
+								name = f.getName();
+							sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
 						}
 						sb.append("return pk;");
 						sb.append("}");
@@ -181,8 +220,8 @@ public class OtsObjector implements Objector {
 						StringBuffer sb = new StringBuffer();
 						sb.append("{");
 						//for echo refKey
-						for(Field f:refKey.keySet()){
-							Key a = refKey.get(f);
+						for(Field f:refColumn.keySet()){
+							Column a = refColumn.get(f);
 							String name = a.name();
 							if(name.isEmpty())
 								name = f.getName();
@@ -218,21 +257,14 @@ public class OtsObjector implements Objector {
 
 //			CtClass cc = pool.get(c.getPackage().getName() + "." + entity.name());
 			ctClass.writeFile("target/gen/");
-			Class<?> clazz = ctClass.toClass();
-			Object obj = clazz.newInstance();
-			return (IStoreTableRow) obj;
 		} catch (NotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (CannotCompileException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return ctClass;
 	}
 
 }
