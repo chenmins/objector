@@ -36,8 +36,10 @@ public class OtsObjector implements Objector {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public IStoreTableRow createObject(Class<? extends Serializable> c) {
+	public <T extends Serializable> T createObject(Class<? extends Serializable> c) {
+ 
 //		System.out.println("createObject:"+c.getName());
 		CtClass ctClass = null;
 		Class<?> clazz = null;
@@ -48,14 +50,10 @@ public class OtsObjector implements Objector {
 				clazz = ctClass.toClass();
 			}else{
 				ctClass = classMap.get(c.getName());
-//				System.out.println("ctClass.getName():"+ctClass.getName());
-//				ClassPool pool = ClassPool.getDefault();
-//				ctClass = pool.get(ctClass.getName());
-//				clazz = ctClass.getClass();
 				clazz =Class.forName(ctClass.getName());
 			}
 			Object obj = clazz.newInstance();
-			return (IStoreTableRow) obj;
+			return (T) obj;
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

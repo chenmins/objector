@@ -5,6 +5,6 @@ import java.io.Serializable;
 public interface Objector {
 
 	IStoreTableRow create(Class<? extends IStoreTableRow> c);
-	
-	IStoreTableRow createObject(Class<? extends Serializable> c);
+
+	<T extends Serializable> T createObject(Class<? extends Serializable> c);
 }

@@ -6,6 +6,7 @@ package org.chenmin.open.objector.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.chenmin.open.objector.IStore;
 import org.chenmin.open.objector.IStoreTableRow;
 import org.chenmin.open.objector.ITableStoreService;
 import org.chenmin.open.objector.Objector;
@@ -29,6 +30,7 @@ public class TestUserService {
 	private static Injector injector;
 	private static ITableStoreService tss;
 	private static Objector objector;
+	private static IStore store;
 
 	/**
 	 * @throws java.lang.Exception
@@ -39,6 +41,7 @@ public class TestUserService {
 		injector = Guice.createInjector(new ServiceModule());
 		tss = injector.getInstance(ITableStoreService.class);
 		objector = injector.getInstance(Objector.class);
+		store = injector.getInstance(IStore.class);
 		IStoreTableRow u = objector.createObject(UserObject.class);
 		if (!tss.exsit(u)) {
 			tss.createTable(u);
@@ -68,34 +71,30 @@ public class TestUserService {
 
 	@Test
 	public void test() {
-		IStoreTableRow row = objector.createObject(UserObject.class);
-		UserObject userObject = (UserObject) row;
+
+		UserObject userObject = objector.createObject(UserObject.class);;
 		String openid = "chenmintest";
 		String passwd = "12345678";
 		String passwd2 = "12";
 		userObject.setOpenid(openid);
 		userObject.setPasswd(passwd);
-		assertTrue(tss.putRow(row));
-		IStoreTableRow rowt = objector.createObject(UserObject.class);
-		UserObject t = (UserObject) rowt;
+		assertTrue(store.save(userObject));
+		UserObject t = objector.createObject(UserObject.class);;
 		t.setOpenid(openid);
-		assertTrue(tss.getRow(rowt));
+		assertTrue(store.get(t));
 		assertEquals(t.getPasswd(), passwd);
-		rowt = objector.createObject(UserObject.class);
-		UserObject u = (UserObject) rowt;
+		UserObject u = objector.createObject(UserObject.class);;
 		u.setOpenid(openid);
 		u.setPasswd(passwd2);
-		assertTrue(tss.updateRow(rowt));
-		rowt = objector.createObject(UserObject.class);
-		t = (UserObject) rowt;
+		assertTrue(store.update(u));
+		t = objector.createObject(UserObject.class);;
 		t.setOpenid(openid);
-		assertTrue(tss.getRow(rowt));
+		assertTrue(store.get(t));
 		assertEquals(t.getPasswd(), passwd2);
-		rowt = objector.createObject(UserObject.class);
-		t = (UserObject) rowt;
+		t = objector.createObject(UserObject.class);;
 		t.setOpenid(openid);
-		assertTrue(tss.deleteRow(rowt) );
-		assertEquals(t.getPasswd(), null);
+		assertTrue(store.del(t));
+		assertEquals(t.getPasswd(),null);
 	}
 
 }
