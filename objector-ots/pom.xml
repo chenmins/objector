@@ -3,14 +3,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.chenmin.open</groupId>
 	<artifactId>objector-ots</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<name>objector-ots</name>
 	<description>aliyun for objector</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.chenmin.open</groupId>
 			<artifactId>objector</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>0.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-configuration</groupId>
@@ -39,4 +39,17 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
+	<distributionManagement>
+        <repository>
+            <id>dpm-Release</id>
+            <name>Demo Release Repository</name>
+            <url>http://vpn.dpm.im:8081/nexus/content/repositories/releases//</url>
+        </repository>
+        <snapshotRepository>
+            <id>dpm-Snapshot</id>
+            <name>Demo Snapshot Repository</name>
+            <url>http://vpn.dpm.im:8081/nexus/content/repositories/snapshots//</url>
+        </snapshotRepository>
+	</distributionManagement> 
 </project>
