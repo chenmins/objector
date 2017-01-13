@@ -6,7 +6,7 @@ import org.chenmin.open.objector.annotation.Column;
 import org.chenmin.open.objector.annotation.Entity;
 import org.chenmin.open.objector.annotation.Key;
 
-@Entity(name = "UserFileObject")
+@Entity(name = "UserFileObjectTest")
 public class UserFile implements Serializable {
 
 	/**
@@ -26,7 +26,7 @@ public class UserFile implements Serializable {
 	@Key(name = "filepid")
 	private String filepid;
 	
-	@Column(name = "filename")
+	@Column
 	private String filename;
 
 	public String getOpenid() {

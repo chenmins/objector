@@ -37,15 +37,12 @@ public class OtsObjector implements Objector {
 	@Override
 	public IStoreTableRow createObject(Class<? extends Serializable> c) {
 		Entity entity = c.getAnnotation(Entity.class);
-		System.out.println(c.getPackage().getName());
-		System.out.println(c.getCanonicalName());
-		System.out.println(c.getSimpleName());
-		System.out.println(entity);
 		Field[] fields = c.getDeclaredFields();
 		List<Field> result = new ArrayList<Field>();
 		LinkedList<Key> keys = new LinkedList<Key>();
 		List<Column> columns = new LinkedList<Column>();
-		LinkedHashMap<Field, Annotation> ref = new LinkedHashMap<Field, Annotation>();
+		LinkedHashMap<Field, Key> refKey = new LinkedHashMap<Field, Key>();
+		LinkedHashMap<Field, Column> refColumn = new LinkedHashMap<Field, Column>();
 		for (Field field : fields) {
 			Key annotationKey = field.getAnnotation(Key.class);
 			if (annotationKey != null) {
@@ -55,23 +52,13 @@ public class OtsObjector implements Objector {
 				} else {
 					keys.add(annotationKey);
 				}
-				ref.put(field, annotationKey);
+				refKey.put(field, annotationKey);
 			}
 			Column annotationColumn = field.getAnnotation(Column.class);
 			if (annotationColumn != null) {
 				result.add(field);
 				columns.add(annotationColumn);
-				ref.put(field, annotationColumn);
-			}
-		}
-		for (Field f : ref.keySet()) {
-			Annotation a = ref.get(f);
-			if (a instanceof Key) {
-				Key ks = (Key) a;
-				System.out.println(f.getType().getName() + " " + f.getName() + ":" + ks);
-			} else if (a instanceof Column) {
-				Column cs = (Column) a;
-				System.out.println(f.getName() + ":" + cs);
+				refColumn.put(field, annotationColumn);
 			}
 		}
 		ClassPool pool = ClassPool.getDefault();
@@ -80,17 +67,147 @@ public class OtsObjector implements Objector {
 			// 创建一个类
 			CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." + entity.name() + "1");
 			// parent
-			CtClass ctParent = pool.get(StoreTableRow.class.getName());
+			CtClass ctParent = pool.get(c.getName());
 			ctClass.setSuperclass(ctParent);
-
-			CtMethod[] mts = ctParent.getMethods();
+			CtClass ctClassRow = pool.get(IStoreTableRow.class.getName());
+			CtClass[] interfacelist={ctClassRow};
+			ctClass.setInterfaces(interfacelist);
+			CtMethod[] mts = ctClassRow.getMethods();
 			for (CtMethod method : mts) {
-				if(method.getName().equals("getTablename")){
-					//tablename
-					CtMethod method2 = new CtMethod(method.getReturnType(), method.getName(), method.getParameterTypes(), ctClass);
+				if(method.getModifiers()==(Modifier.ABSTRACT+Modifier.PUBLIC)){
+					CtClass returnType = method.getReturnType();
+					CtClass[] parameterTypes = method.getParameterTypes();
+					CtMethod method2 = new CtMethod(returnType, method.getName(), parameterTypes, ctClass);
 					method2.setModifiers(Modifier.PUBLIC);
-					method2.setBody("{return \""+entity.name()+"\";}");
+					if(method.getName().equals("getTablename")){
+						//tablename
+						method2.setBody("{return \""+entity.name()+"\";}");
+					}else if(method.getName().equals("getPrimaryKey")){
+						//getPrimaryKey 
+//						java.util.List<PrimaryKeySchemaObject> pk = new java.util.ArrayList<PrimaryKeySchemaObject>();
+//						pk.add(new PrimaryKeySchemaObject("openid", PrimaryKeyTypeObject.STRING));
+//						return pk;
+						StringBuffer sb = new StringBuffer();
+						sb.append("{");
+						sb.append("java.util.List  pk = new java.util.ArrayList ();");
+						for(Key annotationKey :keys){
+							sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+annotationKey.name()+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
+						}
+						sb.append("return pk;");
+						sb.append("}");
+						method2.setBody(sb.toString());
+					}else if(method.getName().equals("getPrimaryKeyValue")){
+						//getPrimaryKeyValue 
+//						Map<String, PrimaryKeyValueObject> m = new LinkedHashMap<String, PrimaryKeyValueObject>();
+//						m.put("openid", new PrimaryKeyValueObject(this.openid, PrimaryKeyTypeObject.STRING));
+//						return m;
+						StringBuffer sb = new StringBuffer();
+						sb.append("{");
+						sb.append("java.util.LinkedHashMap  m = new java.util.LinkedHashMap();");
+						//for echo refKey
+						for(Field f:refKey.keySet()){
+							Key a = refKey.get(f);
+							String name = a.name();
+							if(name.isEmpty())
+								name = f.getName();
+							CtMethod gets = null;
+							for(CtMethod ctm:ctParent.getMethods()){
+								String getname = ctm.getName().toLowerCase();
+								if(getname.equals("get"+f.getName()))
+									gets = ctm;
+							}
+							if(gets==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no getter");
+							sb.append("m.put(\""+name+"\", new org.chenmin.open.objector.PrimaryKeyValueObject(this."+gets.getName()+"(), org.chenmin.open.objector.PrimaryKeyTypeObject."+a.type()+"));");
+						}
+						sb.append("return m;");
+						sb.append("}");
+						method2.setBody(sb.toString());
+					}else if(method.getName().equals("getColumnValue")){
+						//getColumnValue 
+//						Map<String, ColumnValueObject> m = new LinkedHashMap<String, ColumnValueObject>();
+//						for (String key : attrs.keySet()) {
+//							m.put(key, new ColumnValueObject(attrs.get(key), ColumnTypeObject.STRING));
+//						}
+//						return m;
+						StringBuffer sb = new StringBuffer();
+						sb.append("{");
+						sb.append("java.util.LinkedHashMap  m = new java.util.LinkedHashMap();");
+						//for echo refColumn
+						for(Field f:refColumn.keySet()){
+							Column a = refColumn.get(f);
+							String name = a.name();
+							if(name.isEmpty())
+								name = f.getName();
+							CtMethod gets = null;
+							for(CtMethod ctm:ctParent.getMethods()){
+								String getname = ctm.getName().toLowerCase();
+								if(getname.equals("get"+f.getName()))
+									gets = ctm;
+							}
+							if(gets==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no getter method");
+							sb.append("m.put(\""+name+"\", new org.chenmin.open.objector.ColumnValueObject(this."+gets.getName()+"(), org.chenmin.open.objector.ColumnTypeObject."+a.type()+"));");
+						}
+						sb.append("return m;");
+						sb.append("}");
+						method2.setBody(sb.toString());
+					}else if(method.getName().equals("setPrimaryKeyValue")){
+						//setPrimaryKeyValue 
+						// setFileid(((PrimaryKeyValueObject)paramMap.get("fileid")).getValue().toString());
+						StringBuffer sb = new StringBuffer();
+						sb.append("{");
+						//for echo refKey
+						for(Field f:refKey.keySet()){
+							Key a = refKey.get(f);
+							String name = a.name();
+							if(name.isEmpty())
+								name = f.getName();
+							CtMethod sets = null;
+							for(CtMethod ctm:ctParent.getMethods()){
+								String getname = ctm.getName().toLowerCase();
+								if(getname.equals("set"+f.getName()))
+									sets = ctm;
+							}
+							if(sets==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no setter");
+							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.PrimaryKeyValueObject)$1.get(\""+name+"\")).getValue().toString());");
+						}
+						sb.append("}");
+						method2.setBody(sb.toString());
+					}else if(method.getName().equals("setColumnValue")){
+						//setColumnValue 
+						// setFileid(((ColumnValueObject)paramMap.get("fileid")).getValue().toString());
+						StringBuffer sb = new StringBuffer();
+						sb.append("{");
+						//for echo refKey
+						for(Field f:refKey.keySet()){
+							Key a = refKey.get(f);
+							String name = a.name();
+							if(name.isEmpty())
+								name = f.getName();
+							CtMethod sets = null;
+							for(CtMethod ctm:ctParent.getMethods()){
+								String getname = ctm.getName().toLowerCase();
+								if(getname.equals("set"+f.getName()))
+									sets = ctm;
+							}
+							if(sets==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no setter");
+							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.ColumnValueObject)$1.get(\""+name+"\")).getValue().toString());");
+						}
+						sb.append("}");
+						method2.setBody(sb.toString());
+					}else{
+						//未实现 做空
+						if(returnType==null){
+							method2.setBody("{ }");
+						}else{
+							method2.setBody("{return null;}");
+						}
+					}
 					ctClass.addMethod(method2);
+//					System.out.println("------"+method);
 				}
 			}
 //			// 为类设置方法
@@ -100,9 +217,9 @@ public class OtsObjector implements Objector {
 //			ctClass.addMethod(method);
 
 //			CtClass cc = pool.get(c.getPackage().getName() + "." + entity.name());
+			ctClass.writeFile("target/gen/");
 			Class<?> clazz = ctClass.toClass();
 			Object obj = clazz.newInstance();
-			ctClass.writeFile("e:\\tw");
 			return (IStoreTableRow) obj;
 		} catch (NotFoundException e) {
 			e.printStackTrace();
