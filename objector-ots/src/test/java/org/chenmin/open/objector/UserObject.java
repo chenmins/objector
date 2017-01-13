@@ -6,7 +6,7 @@ import org.chenmin.open.objector.annotation.Column;
 import org.chenmin.open.objector.annotation.Entity;
 import org.chenmin.open.objector.annotation.Key;
 
-@Entity(name = "UserObjectTest")
+@Entity
 public class UserObject implements Serializable {
 
 	/**

@@ -3,7 +3,7 @@ an simple tablestore api
 ##Useage 
 ### Pojo with Annotation
 ```java
-@Entity(name = "UserObjectTest")
+@Entity
 public class UserObject implements Serializable {
 	
 	@Key(index = true)

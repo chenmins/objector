@@ -1,7 +1,6 @@
 package org.chenmin.open.objector;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -24,23 +23,9 @@ public class OtsObjector implements Objector {
 	
 	private static HashMap<String,CtClass > classMap = new HashMap<String,CtClass >();
 
-	@Override
-	public IStoreTableRow create(Class<? extends IStoreTableRow> c) {
-		System.out.println(c.getName());
-		Annotation[] an = c.getDeclaredAnnotations();
-		System.out.println("an.length:" + an.length);
-		for (Annotation a : an) {
-			System.out.println(a);
-		}
-		System.out.println("create");
-		return null;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Serializable> T createObject(Class<? extends Serializable> c) {
- 
-//		System.out.println("createObject:"+c.getName());
 		CtClass ctClass = null;
 		Class<?> clazz = null;
 		try {
@@ -97,7 +82,10 @@ public class OtsObjector implements Objector {
 		ClassPool pool = ClassPool.getDefault();
 
 		// 创建一个类
-		CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." + entity.name() + "Gen");
+		String entity_name = entity.name();
+		if(entity_name.isEmpty())
+			entity_name = c.getSimpleName();
+		CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." + entity_name + "Gen");
 		try {
 			// parent
 			CtClass ctParent = pool.get(c.getName());
@@ -114,7 +102,7 @@ public class OtsObjector implements Objector {
 					method2.setModifiers(Modifier.PUBLIC);
 					if(method.getName().equals("getTablename")){
 						//tablename
-						method2.setBody("{return \""+entity.name()+"\";}");
+						method2.setBody("{return \""+entity_name+"\";}");
 					}else if(method.getName().equals("getPrimaryKey")){
 						//getPrimaryKey 
 //						java.util.List<PrimaryKeySchemaObject> pk = new java.util.ArrayList<PrimaryKeySchemaObject>();
@@ -252,8 +240,6 @@ public class OtsObjector implements Objector {
 //			method.setModifiers(Modifier.PUBLIC);
 //			method.setBody("{System.out.println(\"执行结果\");}");
 //			ctClass.addMethod(method);
-
-//			CtClass cc = pool.get(c.getPackage().getName() + "." + entity.name());
 			ctClass.writeFile("target/gen/");
 		} catch (NotFoundException e) {
 			e.printStackTrace();
