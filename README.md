@@ -1,10 +1,8 @@
 # objector
 an simple tablestore api
 ##Useage 
-###with Guice Example
-
+### Pojo with Annotation
 ```java
-
 @Entity(name = "UserObjectTest")
 public class UserObject implements Serializable {
 	
@@ -31,7 +29,11 @@ public class UserObject implements Serializable {
 	}
 
 }
+```
 
+###with Guice Example @Inject
+
+```java
 public class ServiceModule extends AbstractModule {
 
 	@Override
@@ -42,10 +44,9 @@ public class ServiceModule extends AbstractModule {
 	}
 
 }
-
 ```
 
-for CRUD test
+###CRUD for junit test 
 
 ```java
 public class TestUserService {
