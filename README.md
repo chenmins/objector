@@ -1,5 +1,20 @@
 # objector
 an simple tablestore api
+##Install for Maven
+```xml
+	<dependency>
+			<groupId>org.chenmin.open</groupId>
+			<artifactId>objector-ots</artifactId>
+			<version>0.0.2</version>
+	</dependency>
+	<repositories>
+		<repository>
+			<id>dpm</id>
+			<name>Team dpm Repository</name>
+			<url>http://vpn.dpm.im:8081/nexus/content/repositories/releases/</url>
+		</repository>
+	</repositories>
+```
 ##Useage 
 ### Pojo with Annotation
 ```java
