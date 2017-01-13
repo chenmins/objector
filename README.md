@@ -16,6 +16,14 @@ an simple tablestore api
 	</repositories>
 ```
 ##Useage 
+###Config for Aliyun.com OpenTableStore
+objector.properties in classpath
+```
+ALIYUN_ACCESS_KEY=XXXXXX
+ALIYUN_SECRET_KEY=XXXXXX
+TS_ENDPOINT=http://YYYY.cn-beijing.ots.aliyuncs.com
+TS_INSTANCENAME=YYYY
+```
 ### Pojo with Annotation
 ```java
 @Entity
