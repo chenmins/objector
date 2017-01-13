@@ -38,4 +38,14 @@ public class Store implements IStore {
 		return tableStoreService.updateRow((IStoreTableRow) t);
 	}
 
+	@Override
+	public boolean exsitTable(Serializable t) {
+		return tableStoreService.exsit((IStoreTableRow) t);
+	}
+
+	@Override
+	public boolean createTable(Serializable t) {
+		return tableStoreService.createTable((IStoreTableRow) t);
+	}
+
 }

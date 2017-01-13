@@ -1,7 +1,6 @@
 package org.chenmin.open.objector.test;
 
-import org.chenmin.open.objector.IStoreTableRow;
-import org.chenmin.open.objector.ITableStoreService;
+import org.chenmin.open.objector.IStore;
 import org.chenmin.open.objector.Objector;
 import org.chenmin.open.objector.ServiceModule;
 import org.chenmin.open.objector.UserFile;
@@ -17,13 +16,13 @@ import com.google.inject.Injector;
 public class TestUserFileService {
 	private static Injector injector;
 	private static Objector objector;
-	private static ITableStoreService tss;
+	private static IStore store;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		injector = Guice.createInjector(new ServiceModule());
-		tss = injector.getInstance(ITableStoreService.class);
 		objector = injector.getInstance(Objector.class);
+		store = injector.getInstance(IStore.class);
 	}
 
 	@AfterClass
@@ -40,10 +39,10 @@ public class TestUserFileService {
 
 	@Test
 	public void test() {
-		IStoreTableRow  u =  objector.createObject(UserFile.class);
-		System.out.println("table:"+u.getTablename());
-		if(!tss.exsit(u))
-			tss.createTable(u);
+		UserFile  u =  objector.createObject(UserFile.class);
+		if (!store.exsitTable(u)) {
+			store.createTable(u);
+		}
 //		fail("Not yet implemented");
 	}
 

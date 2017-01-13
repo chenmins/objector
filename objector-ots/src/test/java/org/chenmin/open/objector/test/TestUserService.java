@@ -7,8 +7,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.chenmin.open.objector.IStore;
-import org.chenmin.open.objector.IStoreTableRow;
-import org.chenmin.open.objector.ITableStoreService;
 import org.chenmin.open.objector.Objector;
 import org.chenmin.open.objector.ServiceModule;
 import org.chenmin.open.objector.UserObject;
@@ -28,7 +26,6 @@ import com.google.inject.Injector;
 public class TestUserService {
 
 	private static Injector injector;
-	private static ITableStoreService tss;
 	private static Objector objector;
 	private static IStore store;
 
@@ -39,12 +36,11 @@ public class TestUserService {
 	public static void setUpBeforeClass() throws Exception {
 
 		injector = Guice.createInjector(new ServiceModule());
-		tss = injector.getInstance(ITableStoreService.class);
 		objector = injector.getInstance(Objector.class);
 		store = injector.getInstance(IStore.class);
-		IStoreTableRow u = objector.createObject(UserObject.class);
-		if (!tss.exsit(u)) {
-			tss.createTable(u);
+		UserObject u = objector.createObject(UserObject.class);
+		if (!store.exsitTable(u)) {
+			store.createTable(u);
 		}
 	}
 

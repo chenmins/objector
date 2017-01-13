@@ -51,7 +51,6 @@ for CRUD test
 public class TestUserService {
 
 	private static Injector injector;
-	private static ITableStoreService tss;
 	private static Objector objector;
 	private static IStore store;
 
@@ -62,12 +61,11 @@ public class TestUserService {
 	public static void setUpBeforeClass() throws Exception {
 
 		injector = Guice.createInjector(new ServiceModule());
-		tss = injector.getInstance(ITableStoreService.class);
 		objector = injector.getInstance(Objector.class);
 		store = injector.getInstance(IStore.class);
-		IStoreTableRow u = objector.createObject(UserObject.class);
-		if (!tss.exsit(u)) {
-			tss.createTable(u);
+		UserObject u = objector.createObject(UserObject.class);
+		if (!store.exsitTable(u)) {
+			store.createTable(u);
 		}
 	}
 
@@ -121,5 +119,6 @@ public class TestUserService {
 	}
 
 }
+
 ```
 
