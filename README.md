@@ -1,5 +1,7 @@
 # objector
 an simple tablestore api
+Document is 
+[http://open.chenmin.org](http://open.chenmin.org)
 ##Install for Maven
 ```xml
 	<dependency>
@@ -19,6 +21,7 @@ an simple tablestore api
 ###Config for Aliyun.com OpenTableStore
 objector.properties in classpath
 ```
+#Sign up in https://www.aliyun.com/product/ots
 ALIYUN_ACCESS_KEY=XXXXXX
 ALIYUN_SECRET_KEY=XXXXXX
 TS_ENDPOINT=http://YYYY.cn-beijing.ots.aliyuncs.com
