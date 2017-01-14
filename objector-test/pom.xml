@@ -9,11 +9,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.chenmin.open</groupId>
-			<artifactId>objector</artifactId>
-			<version>0.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.chenmin.open</groupId>
 			<artifactId>objector-ots</artifactId>
 			<version>0.0.2</version>
 		</dependency>
