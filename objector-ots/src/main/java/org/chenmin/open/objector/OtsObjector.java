@@ -240,7 +240,7 @@ public class OtsObjector implements Objector {
 //			method.setModifiers(Modifier.PUBLIC);
 //			method.setBody("{System.out.println(\"执行结果\");}");
 //			ctClass.addMethod(method);
-			ctClass.writeFile("target/gen/");
+//			ctClass.writeFile("target/gen/");
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (CannotCompileException e) {
