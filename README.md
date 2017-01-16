@@ -78,7 +78,6 @@ public class ServiceModule extends AbstractModule {
 public class TestUserService {
 
 	private static Injector injector;
-	private static Objector objector;
 	private static IStore store;
 
 	/**
@@ -93,27 +92,6 @@ public class TestUserService {
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
 		}
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	@Test
