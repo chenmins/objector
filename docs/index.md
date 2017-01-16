@@ -8,7 +8,7 @@ Objector 是一个简单的对象创建器。
 主要支持讲普通的Pojo对象通过\\@annotation方式进行字节码增强，并将对象直接持久化的微型框架。
 目前采用阿里云的**表格存储**实现，详情见
 [https://www.aliyun.com/product/ots](https://www.aliyun.com/product/ots)
-待此版本文档后，讲提供其他实现方式如**MongoDB**
+待此版本稳定后，将提供其他实现方式如**MongoDB**
 
 ## [](#maven-install)安装方式Install for Maven
 
@@ -29,13 +29,13 @@ Objector 是一个简单的对象创建器。
 </repositories>
 ```
 
-##[](#Useage)使用方式Useage 
+## [](#Useage)使用方式Useage 
 
-###阿里云配置Config for Aliyun.com OpenTableStore
+### 阿里云配置Config for Aliyun.com OpenTableStore
 
-请再classpath中加入配置文件objector.properties
+请再classpath中加入配置文件根目录objector.properties
 
-objector.properties in classpath
+objector.properties in classpath 
 
 ```
 #Sign up in https://www.aliyun.com/product/ots
