@@ -7,7 +7,7 @@ Document is
 	<dependency>
 			<groupId>org.chenmin.open</groupId>
 			<artifactId>objector-ots</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3</version>
 	</dependency>
 	<repositories>
 		<repository>
@@ -88,9 +88,8 @@ public class TestUserService {
 	public static void setUpBeforeClass() throws Exception {
 
 		injector = Guice.createInjector(new ServiceModule());
-		objector = injector.getInstance(Objector.class);
 		store = injector.getInstance(IStore.class);
-		UserObject u = objector.createObject(UserObject.class);
+		UserObject u = new UserObject();
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
 		}
@@ -119,32 +118,31 @@ public class TestUserService {
 
 	@Test
 	public void test() {
-
-		UserObject userObject = objector.createObject(UserObject.class);;
+		
+		UserObject userObject = new UserObject();
 		String openid = "chenmintest";
 		String passwd = "12345678";
 		String passwd2 = "12";
 		userObject.setOpenid(openid);
 		userObject.setPasswd(passwd);
 		assertTrue(store.save(userObject));
-		UserObject t = objector.createObject(UserObject.class);;
+		UserObject t = new UserObject();
 		t.setOpenid(openid);
 		assertTrue(store.get(t));
 		assertEquals(t.getPasswd(), passwd);
-		UserObject u = objector.createObject(UserObject.class);;
+		UserObject u = new UserObject();
 		u.setOpenid(openid);
 		u.setPasswd(passwd2);
 		assertTrue(store.update(u));
-		t = objector.createObject(UserObject.class);;
+		t = new UserObject();
 		t.setOpenid(openid);
 		assertTrue(store.get(t));
 		assertEquals(t.getPasswd(), passwd2);
-		t = objector.createObject(UserObject.class);;
+		t = new UserObject();
 		t.setOpenid(openid);
 		assertTrue(store.del(t));
 		assertEquals(t.getPasswd(),null);
 	}
-
 }
 
 ```
