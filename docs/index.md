@@ -7,7 +7,7 @@ layout: default
 Objector 是一个简单的对象创建器。
 主要支持讲普通的Pojo对象通过\@annotation方式进行字节码增强，并将对象直接持久化的微型框架。
 
-## [](#maven-install)安装说明Install for Maven
+## [](#maven-install)安装方式Install for Maven
 
 来自我的私有maven库，加入以下依赖。
 
