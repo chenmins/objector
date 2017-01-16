@@ -28,3 +28,19 @@ Objector 是一个简单的对象创建器。
 	</repository>
 </repositories>
 ```
+
+##[](#Useage)使用方式Useage 
+
+###阿里云配置Config for Aliyun.com OpenTableStore
+
+请再classpath中加入配置文件objector.properties
+
+objector.properties in classpath
+
+```
+#Sign up in https://www.aliyun.com/product/ots
+ALIYUN_ACCESS_KEY=XXXXXX
+ALIYUN_SECRET_KEY=XXXXXX
+TS_ENDPOINT=http://YYYY.cn-beijing.ots.aliyuncs.com
+TS_INSTANCENAME=YYYY
+```
