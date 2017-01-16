@@ -3,7 +3,6 @@ package org.chenmin.open.objector;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -54,8 +53,7 @@ public class OtsObjector implements Objector {
 	private CtClass createEntity(Class<? extends Serializable> c) {
 		Entity entity = c.getAnnotation(Entity.class);
 		Field[] fields = c.getDeclaredFields();
-		List<Field> result = new ArrayList<Field>();
-		LinkedList<Key> keys = new LinkedList<Key>();
+		LinkedList<Field> key_result = new LinkedList<Field>();
 		List<Column> columns = new LinkedList<Column>();
 		LinkedHashMap<Field, Key> refKey = new LinkedHashMap<Field, Key>();
 		LinkedHashMap<Field, Column> refColumn = new LinkedHashMap<Field, Column>();
@@ -63,18 +61,16 @@ public class OtsObjector implements Objector {
 		for (Field field : fields) {
 			Key annotationKey = field.getAnnotation(Key.class);
 			if (annotationKey != null) {
-				result.add(field);
 				if (annotationKey.index()) {
-					keys.add(0, annotationKey);
+					key_result.add(0,field);
 				} else {
-					keys.add(annotationKey);
+					key_result.add(field);
 				}
 				refField.put(annotationKey,field);
 				refKey.put(field, annotationKey);
 			}
 			Column annotationColumn = field.getAnnotation(Column.class);
 			if (annotationColumn != null) {
-				result.add(field);
 				columns.add(annotationColumn);
 				refColumn.put(field, annotationColumn);
 			}
@@ -111,11 +107,11 @@ public class OtsObjector implements Objector {
 						StringBuffer sb = new StringBuffer();
 						sb.append("{");
 						sb.append("java.util.List  pk = new java.util.ArrayList ();");
-						for(Key annotationKey :keys){
+						for (Field field : key_result) {
+							Key annotationKey = field.getAnnotation(Key.class);
 							String name = annotationKey.name();
-							Field f = refField.get(annotationKey);
 							if(name.isEmpty())
-								name = f.getName();
+								name = field.getName();
 							sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
 						}
 						sb.append("return pk;");
