@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.chenmin.open</groupId>
   <artifactId>objector</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <name>objector</name>
   <description>object store api</description>
   
