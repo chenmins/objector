@@ -10,6 +10,10 @@ Objector 是一个简单的对象创建器。
 [https://www.aliyun.com/product/ots](https://www.aliyun.com/product/ots)
 待此版本稳定后，将提供其他实现方式如**MongoDB**
 
+## [](#download-install)安装方式Install for Download
+
+完整包下载 [lib.0.0.3.zip](assets/download/lib.0.0.3.zip)
+
 ## [](#maven-install)安装方式Install for Maven
 
 来自我的私有maven库，加入以下依赖。
