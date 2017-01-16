@@ -63,7 +63,16 @@ public class Store implements IStore {
 
 	@Override
 	public boolean get(Serializable t) throws StoreException {
-		return tableStoreService.getRow((IStoreTableRow) copyObject(t));
+		IStoreTableRow copyObject = (IStoreTableRow) copyObject(t);
+		boolean row = tableStoreService.getRow(copyObject);
+		try {
+			BeanUtils.copyProperties(t, copyObject);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return row;
 	}
 
 	@Override
