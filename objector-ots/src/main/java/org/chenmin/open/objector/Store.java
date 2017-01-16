@@ -1,13 +1,28 @@
 package org.chenmin.open.objector;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+
+import org.apache.commons.beanutils.BeanUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 @Singleton
 public class Store implements IStore {
+
+	protected Objector objector;
+	
 	protected ITableStoreService tableStoreService;
+
+	public Objector getObjector() {
+		return objector;
+	}
+
+	@Inject
+	public void setObjector(Objector objector) {
+		this.objector = objector;
+	}
 
 	public ITableStoreService getTableStoreService() {
 		return tableStoreService;
@@ -18,34 +33,52 @@ public class Store implements IStore {
 		this.tableStoreService = tableStoreService;
 	}
 
-	@Override
-	public boolean save(Serializable t) {
-		return tableStoreService.putRow((IStoreTableRow) t);
+	protected Serializable createObject(Serializable t) {
+		Serializable object = objector.createObject(t.getClass());
+		return object;
+	}
+
+	protected Serializable copyObject(Serializable user) {
+		try {
+			Serializable userObject = createObject(user);
+			BeanUtils.copyProperties(userObject, user);
+			return userObject;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
-	public boolean del(Serializable t) {
-		return tableStoreService.deleteRow((IStoreTableRow) t);
+	public boolean save(Serializable t) throws StoreException {
+		return tableStoreService.putRow((IStoreTableRow) copyObject(t));
 	}
 
 	@Override
-	public boolean get(Serializable t) {
-		return tableStoreService.getRow((IStoreTableRow) t);
+	public boolean del(Serializable t) throws StoreException {
+		return tableStoreService.deleteRow((IStoreTableRow) copyObject(t));
 	}
 
 	@Override
-	public boolean update(Serializable t) {
-		return tableStoreService.updateRow((IStoreTableRow) t);
+	public boolean get(Serializable t) throws StoreException {
+		return tableStoreService.getRow((IStoreTableRow) copyObject(t));
 	}
 
 	@Override
-	public boolean exsitTable(Serializable t) {
-		return tableStoreService.exsit((IStoreTableRow) t);
+	public boolean update(Serializable t) throws StoreException {
+		return tableStoreService.updateRow((IStoreTableRow) copyObject(t));
 	}
 
 	@Override
-	public boolean createTable(Serializable t) {
-		return tableStoreService.createTable((IStoreTableRow) t);
+	public boolean exsitTable(Serializable t) throws StoreException {
+		return tableStoreService.exsit((IStoreTableRow) copyObject(t));
+	}
+
+	@Override
+	public boolean createTable(Serializable t) throws StoreException {
+		return tableStoreService.createTable((IStoreTableRow) copyObject(t));
 	}
 
 }
