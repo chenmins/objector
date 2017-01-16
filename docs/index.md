@@ -53,7 +53,7 @@ TS_INSTANCENAME=YYYY
 
 ### Pojo with Annotation
 
-[详细源码 点此进入](https://github.com/chenmins/objector/tree/master/objector-ots/src/test/java/org/chenmin/open/objector)
+[详细源码 点此进入](https://github.com/chenmins/objector/blob/master/objector-test/src/test/java/org/chenmin/open/objector/UserObject.java)
 
 ```java
 @Entity//表示此对象为持久化实体
@@ -65,27 +65,14 @@ public class UserObject implements Serializable {
 	@Column//列名称
 	private String passwd;
 
-	public String getOpenid() {
-		return openid;
-	}
-
-	public void setOpenid(String openid) {
-		this.openid = openid;
-	}
-
-	public String getPasswd() {
-		return passwd;
-	}
-
-	public void setPasswd(String passwd) {
-		this.passwd = passwd;
-	}
+	//some getter and setter ......
 
 }
 ```
 
-
 ### with Guice Example @Inject
+
+[详细源码 点此进入](https://github.com/chenmins/objector/blob/master/objector-test/src/test/java/org/chenmin/open/objector/ServiceModule.java)
 
 ```java
 public class ServiceModule extends AbstractModule {
@@ -101,6 +88,9 @@ public class ServiceModule extends AbstractModule {
 ```
 
 ### CRUD for junit test 
+
+[详细源码 点此进入](https://github.com/chenmins/objector/blob/master/objector-test/src/test/java/org/chenmin/open/objector/test/TestUserService.java)
+
 
 ```java
 public class TestUserService {
