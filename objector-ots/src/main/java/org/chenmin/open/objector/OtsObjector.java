@@ -13,6 +13,7 @@ import org.chenmin.open.objector.annotation.Entity;
 import org.chenmin.open.objector.annotation.Key;
 
 import javassist.CannotCompileException;
+import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -76,7 +77,7 @@ public class OtsObjector implements Objector {
 			}
 		}
 		ClassPool pool = ClassPool.getDefault();
-
+		pool.insertClassPath(new ClassClassPath((this.getClass())));
 		// 创建一个类
 		String entity_name = entity.name();
 		if(entity_name.isEmpty())
