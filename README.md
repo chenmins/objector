@@ -1,7 +1,7 @@
 # objector
 an simple tablestore api
 Document is 
-[http://open.chenmin.org](http://open.chenmin.org)
+[http://objector.open.chenmin.org](http://objector.open.chenmin.org)
 ##Install for Maven
 ```xml
 	<dependency>
