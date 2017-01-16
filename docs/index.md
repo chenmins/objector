@@ -50,3 +50,107 @@ ALIYUN_SECRET_KEY=XXXXXX
 TS_ENDPOINT=http://YYYY.cn-beijing.ots.aliyuncs.com
 TS_INSTANCENAME=YYYY
 ```
+
+### Pojo with Annotation
+
+[详细源码 点此进入](https://github.com/chenmins/objector/tree/master/objector-ots/src/test/java/org/chenmin/open/objector)
+
+```java
+@Entity//表示此对象为持久化实体
+public class UserObject implements Serializable {
+	
+	@Key(index = true)//主键，和索引
+	private String openid;
+	
+	@Column//列名称
+	private String passwd;
+
+	public String getOpenid() {
+		return openid;
+	}
+
+	public void setOpenid(String openid) {
+		this.openid = openid;
+	}
+
+	public String getPasswd() {
+		return passwd;
+	}
+
+	public void setPasswd(String passwd) {
+		this.passwd = passwd;
+	}
+
+}
+```
+
+
+### with Guice Example @Inject
+
+```java
+public class ServiceModule extends AbstractModule {
+
+	@Override
+	protected void configure() {
+		bind(ITableStoreService.class).to(TableStoreService.class);
+		bind(IStore.class).to(Store.class);
+		bind(Objector.class).to(OtsObjector.class);
+	}
+
+}
+```
+
+### CRUD for junit test 
+
+```java
+public class TestUserService {
+
+	private static Injector injector;
+	private static IStore store;
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@BeforeClass
+	public static void setUpBeforeClass() throws Exception {
+		//初始化Guice容器
+		injector = Guice.createInjector(new ServiceModule());
+		store = injector.getInstance(IStore.class);
+		UserObject u = new UserObject();
+		if (!store.exsitTable(u)) {
+			store.createTable(u);
+		}
+	}
+
+	@Test
+	public void test() {
+		
+		UserObject userObject = new UserObject();
+		String openid = "chenmintest";
+		String passwd = "12345678";
+		String passwd2 = "12";
+		userObject.setOpenid(openid);
+		userObject.setPasswd(passwd);
+		assertTrue(store.save(userObject));
+		UserObject t = new UserObject();
+		t.setOpenid(openid);
+		assertTrue(store.get(t));
+		assertEquals(t.getPasswd(), passwd);
+		UserObject u = new UserObject();
+		u.setOpenid(openid);
+		u.setPasswd(passwd2);
+		assertTrue(store.update(u));
+		t = new UserObject();
+		t.setOpenid(openid);
+		assertTrue(store.get(t));
+		assertEquals(t.getPasswd(), passwd2);
+		t = new UserObject();
+		t.setOpenid(openid);
+		assertTrue(store.del(t));
+		assertEquals(t.getPasswd(),null);
+	}
+}
+
+```
+
+
