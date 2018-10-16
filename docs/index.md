@@ -18,7 +18,7 @@ Objector 是一个简单的对象创建器。
 
 ## [](#maven-install)安装方式Install for Maven
 
-来自我的私有maven库，加入以下依赖。
+来自maven中心库，加入以下依赖。
 
 ```xml
 <dependency>
