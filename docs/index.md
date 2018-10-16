@@ -26,13 +26,6 @@ Objector 是一个简单的对象创建器。
 		<artifactId>objector-ots</artifactId>
 		<version>0.0.3</version>
 </dependency>
-<repositories>
-	<repository>
-		<id>dpm</id>
-		<name>Team dpm Repository</name>
-		<url>http://vpn.dpm.im:8081/nexus/content/repositories/releases/</url>
-	</repository>
-</repositories>
 ```
 
 ## [](#Useage)使用方式Useage 
