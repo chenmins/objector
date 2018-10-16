@@ -2,24 +2,22 @@
 an simple tablestore api
 Document is 
 [http://objector.open.chenmin.org](http://objector.open.chenmin.org)
+
 ##Install for Maven
+
 ```xml
 	<dependency>
 			<groupId>org.chenmin.open</groupId>
 			<artifactId>objector-ots</artifactId>
 			<version>0.0.3</version>
 	</dependency>
-	<repositories>
-		<repository>
-			<id>dpm</id>
-			<name>Team dpm Repository</name>
-			<url>http://vpn.dpm.im:8081/nexus/content/repositories/releases/</url>
-		</repository>
-	</repositories>
 ```
 ##Useage 
+
 ###Config for Aliyun.com OpenTableStore
+
 objector.properties in classpath
+
 ```
 #Sign up in https://www.aliyun.com/product/ots
 ALIYUN_ACCESS_KEY=XXXXXX
@@ -27,7 +25,9 @@ ALIYUN_SECRET_KEY=XXXXXX
 TS_ENDPOINT=http://YYYY.cn-beijing.ots.aliyuncs.com
 TS_INSTANCENAME=YYYY
 ```
+
 ### Pojo with Annotation
+
 ```java
 @Entity
 public class UserObject implements Serializable {
@@ -125,4 +125,3 @@ public class TestUserService {
 
 ```
 
-ocean test
