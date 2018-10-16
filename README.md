@@ -3,8 +3,7 @@ an simple tablestore api
 Document is 
 [http://objector.open.chenmin.org](http://objector.open.chenmin.org)
 
-##Install for Maven
-
+## Install for Maven
 ```xml
 	<dependency>
 			<groupId>org.chenmin.open</groupId>
@@ -12,9 +11,8 @@ Document is
 			<version>0.0.3</version>
 	</dependency>
 ```
-##Useage 
-
-###Config for Aliyun.com OpenTableStore
+## Useage 
+### Config for Aliyun.com OpenTableStore
 
 objector.properties in classpath
 
@@ -27,7 +25,6 @@ TS_INSTANCENAME=YYYY
 ```
 
 ### Pojo with Annotation
-
 ```java
 @Entity
 public class UserObject implements Serializable {
@@ -57,8 +54,7 @@ public class UserObject implements Serializable {
 }
 ```
 
-###with Guice Example @Inject
-
+### with Guice Example @Inject
 ```java
 public class ServiceModule extends AbstractModule {
 
@@ -72,7 +68,7 @@ public class ServiceModule extends AbstractModule {
 }
 ```
 
-###CRUD for junit test 
+### CRUD for junit test 
 
 ```java
 public class TestUserService {
