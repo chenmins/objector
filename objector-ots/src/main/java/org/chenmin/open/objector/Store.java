@@ -5,10 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-
-@Singleton
 public class Store implements IStore {
 
 	protected Objector objector;
@@ -19,7 +15,6 @@ public class Store implements IStore {
 		return objector;
 	}
 
-	@Inject
 	public void setObjector(Objector objector) {
 		this.objector = objector;
 	}
@@ -28,7 +23,6 @@ public class Store implements IStore {
 		return tableStoreService;
 	}
 
-	@Inject
 	public void setTableStoreService(ITableStoreService tableStoreService) {
 		this.tableStoreService = tableStoreService;
 	}

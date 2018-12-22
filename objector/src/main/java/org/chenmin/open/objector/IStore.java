@@ -15,5 +15,14 @@ public interface IStore {
 	boolean get(Serializable t) throws StoreException;
 
 	boolean update(Serializable t) throws StoreException;
+	
+	Objector getObjector() ;
+
+	void setObjector(Objector objector) ;
+
+	ITableStoreService getTableStoreService();
+
+	void setTableStoreService(ITableStoreService tableStoreService);
+
 
 }
