@@ -12,15 +12,12 @@ import org.chenmin.open.objector.annotation.Column;
 import org.chenmin.open.objector.annotation.Entity;
 import org.chenmin.open.objector.annotation.Key;
 
-import com.google.inject.Singleton;
-
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-@Singleton
 public class OtsObjector implements Objector {
 	
 	private static HashMap<String,CtClass > classMap = new HashMap<String,CtClass >();

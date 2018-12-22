@@ -5,13 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.chenmin.open.objector.ColumnTypeObject;
-import org.chenmin.open.objector.ColumnValueObject;
-import org.chenmin.open.objector.IStoreTable;
-import org.chenmin.open.objector.IStoreTableRow;
-import org.chenmin.open.objector.PrimaryKeySchemaObject;
-import org.chenmin.open.objector.PrimaryKeyValueObject;
-
 import com.alicloud.openservices.tablestore.ClientConfiguration;
 import com.alicloud.openservices.tablestore.ClientException;
 import com.alicloud.openservices.tablestore.SyncClient;
@@ -44,9 +37,7 @@ import com.alicloud.openservices.tablestore.model.TableOptions;
 import com.alicloud.openservices.tablestore.model.UpdateRowRequest;
 import com.alicloud.openservices.tablestore.model.UpdateRowResponse;
 import com.alicloud.openservices.tablestore.model.internal.CreateTableRequestEx;
-import com.google.inject.Singleton;
 
-@Singleton
 public class TableStoreService implements ITableStoreService {
 	SyncClient client = null;
 
