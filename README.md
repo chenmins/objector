@@ -8,7 +8,7 @@ Document is
 	<dependency>
 			<groupId>org.chenmin.open</groupId>
 			<artifactId>objector-ots</artifactId>
-			<version>0.0.3</version>
+			<version>0.0.4</version>
 	</dependency>
 ```
 ## Useage 
@@ -54,26 +54,11 @@ public class UserObject implements Serializable {
 }
 ```
 
-### with Guice Example @Inject
-```java
-public class ServiceModule extends AbstractModule {
-
-	@Override
-	protected void configure() {
-		bind(ITableStoreService.class).to(TableStoreService.class);
-		bind(IStore.class).to(Store.class);
-		bind(Objector.class).to(OtsObjector.class);
-	}
-
-}
-```
-
 ### CRUD for junit test 
 
 ```java
 public class TestUserService {
 
-	private static Injector injector;
 	private static IStore store;
 
 	/**
@@ -81,9 +66,7 @@ public class TestUserService {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-
-		injector = Guice.createInjector(new ServiceModule());
-		store = injector.getInstance(IStore.class);
+		store =StoreFactory.create();
 		UserObject u = new UserObject();
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
