@@ -218,7 +218,7 @@ public class TableStoreService implements ITableStoreService {
 		// 读一�?
 		SingleRowQueryCriteria criteria = new SingleRowQueryCriteria(row.getTablename(), primaryKeys);
 		// 设置读取�?��版本
-		criteria.setMaxVersions(3);
+		criteria.setMaxVersions(1);
 		// TimeRange timeRange;
 		// criteria.setTimeRange(timeRange);
 		GetRowResponse getRowResponse = client.getRow(new GetRowRequest(criteria));
@@ -230,10 +230,10 @@ public class TableStoreService implements ITableStoreService {
 		Column[] cols = rows.getColumns();
 		Map<String, ColumnValueObject> v = new LinkedHashMap<String, ColumnValueObject>();
 		for (Column c : cols) {
-//			ColumnValue cv = c.getValue();
-			//改为取出最后版本的字
-			Column cc = rows.getLatestColumn(c.getName());
-			ColumnValue cv = cc.getValue();
+			ColumnValue cv = c.getValue();
+			//取出最后版本的字
+//			Column cc = rows.getLatestColumn(c.getName());
+//			ColumnValue cv = cc.getValue();
 			ColumnValueObject cvo = null;
 			switch (cv.getType()) {
 			case STRING:
