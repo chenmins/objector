@@ -227,6 +227,7 @@ public class OtsObjector implements Objector {
 							}
 							if(sets==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no setter");
+							//TODO 此处只有String的实现，未增加其他类型
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.PrimaryKeyValueObject)$1.get(\""+name+"\")).getValue().toString());");
 						}
 						sb.append("}");
@@ -250,6 +251,7 @@ public class OtsObjector implements Objector {
 							}
 							if(sets==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no setter");
+							//TODO 此处只有String的实现，未增加其他类型
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.ColumnValueObject)$1.get(\""+name+"\")).getValue().toString());");
 						}
 						sb.append("}");
