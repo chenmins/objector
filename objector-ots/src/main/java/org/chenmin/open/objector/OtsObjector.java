@@ -269,11 +269,11 @@ public class OtsObjector implements Objector {
 				}
 			}
 //			// 为类设置方法
-			CtMethod method = new CtMethod(CtClass.voidType, "run", null, ctClass);
-			method.setModifiers(Modifier.PUBLIC);
-			method.setBody("{System.out.println(\"执行结果\");}");
-			ctClass.addMethod(method);
-			ctClass.writeFile("target/gen/");
+//			CtMethod method = new CtMethod(CtClass.voidType, "run", null, ctClass);
+//			method.setModifiers(Modifier.PUBLIC);
+//			method.setBody("{System.out.println(\"执行结果\");}");
+//			ctClass.addMethod(method);
+//			ctClass.writeFile("target/gen/");
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (CannotCompileException e) {
