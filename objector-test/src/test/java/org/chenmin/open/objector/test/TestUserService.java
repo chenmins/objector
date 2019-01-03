@@ -33,6 +33,9 @@ public class TestUserService {
 		UserObject u = new UserObject();
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
+		}else{
+			store.deleteTable(u);
+			store.createTable(u);
 		}
 	}
 
