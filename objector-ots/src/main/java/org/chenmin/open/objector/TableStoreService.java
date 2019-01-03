@@ -160,6 +160,8 @@ public class TableStoreService implements ITableStoreService {
 		List<Column> list = new ArrayList<Column>();
 		for (String ck : column.keySet()) {
 			ColumnValueObject cv = column.get(ck);
+			if(cv.getValue()==null)
+				continue;
 			Column c = null;
 			switch (cv.getType()) {
 			case INTEGER:
