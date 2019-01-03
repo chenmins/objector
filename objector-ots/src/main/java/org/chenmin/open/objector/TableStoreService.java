@@ -16,6 +16,8 @@ import com.alicloud.openservices.tablestore.model.ColumnValue;
 import com.alicloud.openservices.tablestore.model.CreateTableResponse;
 import com.alicloud.openservices.tablestore.model.DeleteRowRequest;
 import com.alicloud.openservices.tablestore.model.DeleteRowResponse;
+import com.alicloud.openservices.tablestore.model.DeleteTableRequest;
+import com.alicloud.openservices.tablestore.model.DeleteTableResponse;
 import com.alicloud.openservices.tablestore.model.DescribeTableRequest;
 import com.alicloud.openservices.tablestore.model.DescribeTableResponse;
 import com.alicloud.openservices.tablestore.model.GetRowRequest;
@@ -109,7 +111,7 @@ public class TableStoreService implements ITableStoreService {
 			}
 		}
 		// 数据的过期时�? 单位�? -1代表永不过期. 假如设置过期时间为一�? 即为 365 * 24 * 3600.
-		int timeToLive =table.timeToLive();
+		int timeToLive = table.timeToLive();
 		// 保存的最大版本数, 设置�?即代表每列上�?��保存3个最新的版本.
 		int maxVersions = table.maxVersions();
 		int writeCapacityUnit = table.writeCapacityUnit();
@@ -215,8 +217,8 @@ public class TableStoreService implements ITableStoreService {
 		SingleRowQueryCriteria criteria = new SingleRowQueryCriteria(row.getTablename(), primaryKeys);
 		// 设置读取�?��版本
 		criteria.setMaxVersions(2);
-//		TimeRange timeRange;
-//		criteria.setTimeRange(timeRange);
+		// TimeRange timeRange;
+		// criteria.setTimeRange(timeRange);
 		GetRowResponse getRowResponse = client.getRow(new GetRowRequest(criteria));
 		if (getRowResponse == null)
 			return false;
@@ -271,6 +273,13 @@ public class TableStoreService implements ITableStoreService {
 			rowUpdateChange.put(c);
 		}
 		UpdateRowResponse r = client.updateRow(new UpdateRowRequest(rowUpdateChange));
+		return r.getRequestId() != null;
+	}
+
+	@Override
+	public boolean deleteTable(IStoreTable table) {
+		DeleteTableRequest request = new DeleteTableRequest(table.getTablename());
+		DeleteTableResponse r = client.deleteTable(request);
 		return r.getRequestId() != null;
 	}
 
