@@ -15,7 +15,7 @@ public @interface Column {
 	/**
 	 * Controls the actual kind name used in the datastore.
 	 */
-	String name() default "";
+	String value() default "";
 	
 	ColumnTypeObject type() default ColumnTypeObject.STRING;
 }

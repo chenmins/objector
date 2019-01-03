@@ -15,7 +15,7 @@ public @interface Key {
 	/**
 	 * Controls the actual kind name used in the datastore.
 	 */
-	String name() default "";
+	String value() default "";
 	
 	PrimaryKeyTypeObject type() default PrimaryKeyTypeObject.STRING;
 	
