@@ -24,4 +24,34 @@ public class TableMetaObject implements IStoreTable{
 		this.primaryKey = primaryKey;
 	}
 
+	@Override
+	public int timeToLive() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int maxVersions() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public long maxTimeDeviation() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int readCapacityUnit() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int writeCapacityUnit() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }
