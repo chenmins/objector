@@ -4,10 +4,11 @@ import org.chenmin.open.objector.IStore;
 import org.chenmin.open.objector.StoreException;
 import org.chenmin.open.objector.StoreFactory;
 import org.chenmin.open.objector.UserAttr;
-import org.chenmin.open.objector.UserObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TestUserAttr {
 	private static IStore store;
@@ -21,6 +22,9 @@ public class TestUserAttr {
 		UserAttr u = new UserAttr();
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
+		}else{
+			store.deleteTable(u);
+			store.createTable(u);
 		}
 	}
 
@@ -33,29 +37,34 @@ public class TestUserAttr {
 	@Test
 	public void test() throws StoreException {
 
-//		UserObject userObject = new UserObject();
-//		String openid = "chenmintest";
-//		String passwd = "12345678";
-//		String passwd2 = "12";
-//		userObject.setOpenid(openid);
-//		userObject.setPasswd(passwd);
-//		assertTrue(store.save(userObject));
-//		UserObject t = new UserObject();
-//		t.setOpenid(openid);
-//		assertTrue(store.get(t));
-//		assertEquals(t.getPasswd(), passwd);
-//		UserObject u = new UserObject();
-//		u.setOpenid(openid);
-//		u.setPasswd(passwd2);
-//		assertTrue(store.update(u));
-//		t = new UserObject();
-//		t.setOpenid(openid);
-//		assertTrue(store.get(t));
-//		assertEquals(t.getPasswd(), passwd2);
-//		t = new UserObject();
-//		t.setOpenid(openid);
-//		assertTrue(store.del(t));
-//		assertEquals(t.getPasswd(),null);
+		UserAttr userObject = new UserAttr();
+		String openid = "chenminUserAttr";
+		String nackname = "Chenmin";
+		String email = "admin@chenmin.org";
+		String telphone = "13333333333";
+		
+		String telphone2 = "12";
+		userObject.setOpenid(openid);
+		userObject.setNackname(nackname);
+		userObject.setEmail(email);
+		userObject.setTelphone(telphone);
+		assertTrue(store.save(userObject));
+		UserAttr t = new UserAttr();
+		t.setOpenid(openid);
+		assertTrue(store.get(t));
+		assertEquals(t.getTelphone(), telphone);
+		UserAttr u = new UserAttr();
+		u.setOpenid(openid);
+		u.setTelphone(telphone2);
+		assertTrue(store.update(u));
+		t = new UserAttr();
+		t.setOpenid(openid);
+		assertTrue(store.get(t));
+		assertEquals(t.getTelphone(), telphone2);
+		t = new UserAttr();
+		t.setOpenid(openid);
+		assertTrue(store.del(t));
+		assertEquals(t.getTelphone(),null);
 	}
 
 }
