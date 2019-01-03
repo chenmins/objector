@@ -8,8 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.chenmin.open.objector.annotation.CapacityUnit;
 import org.chenmin.open.objector.annotation.Column;
 import org.chenmin.open.objector.annotation.Entity;
+import org.chenmin.open.objector.annotation.EntityOption;
 import org.chenmin.open.objector.annotation.Key;
 
 import javassist.CannotCompileException;
@@ -52,6 +54,8 @@ public class OtsObjector implements Objector {
 
 	private CtClass createEntity(Class<? extends Serializable> c) {
 		Entity entity = c.getAnnotation(Entity.class);
+		EntityOption entityOption = c.getAnnotation(EntityOption.class);
+		CapacityUnit capacityUnit = c.getAnnotation(CapacityUnit.class);
 		Field[] fields = c.getDeclaredFields();
 		LinkedList<Field> key_result = new LinkedList<Field>();
 		List<Column> columns = new LinkedList<Column>();
@@ -78,10 +82,13 @@ public class OtsObjector implements Objector {
 		ClassPool pool = ClassPool.getDefault();
 		pool.insertClassPath(new ClassClassPath((this.getClass())));
 		// 创建一个类
-		String entity_name = entity.name();
+		String entity_name = entity.value();
+		String new_classname = null;
 		if(entity_name.isEmpty())
-			entity_name = c.getSimpleName();
-		CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." + entity_name + "Gen");
+			new_classname = c.getSimpleName();
+		else
+			new_classname =  c.getSimpleName()+"_"+entity_name;
+		CtClass ctClass = pool.makeClass(c.getPackage().getName() + "." +new_classname + "_Gen");
 		try {
 			// parent
 			CtClass ctParent = pool.get(c.getName());
@@ -99,6 +106,31 @@ public class OtsObjector implements Objector {
 					if(method.getName().equals("getTablename")){
 						//tablename
 						method2.setBody("{return \""+entity_name+"\";}");
+					}else if(method.getName().equals("readCapacityUnit")){
+						if(capacityUnit == null)
+							method2.setBody("{return 0;}");
+						else
+							method2.setBody("{return "+capacityUnit.readCapacityUnit()+";}");
+					}else if(method.getName().equals("writeCapacityUnit")){
+						if(capacityUnit == null)
+							method2.setBody("{return 0;}");
+						else
+							method2.setBody("{return "+capacityUnit.writeCapacityUnit()+";}");
+					}else if(method.getName().equals("timeToLive")){
+						if(entityOption == null)
+							method2.setBody("{return -1;}");
+						else
+							method2.setBody("{return "+entityOption.timeToLive()+";}");
+					}else if(method.getName().equals("maxVersions")){
+						if(entityOption == null)
+							method2.setBody("{return 1;}");
+						else
+							method2.setBody("{return "+entityOption.maxVersions()+";}");
+					}else if(method.getName().equals("maxTimeDeviation")){
+						if(entityOption == null)
+							method2.setBody("{return 0L;}");
+						else
+							method2.setBody("{return "+entityOption.maxTimeDeviation()+"L;}");
 					}else if(method.getName().equals("getPrimaryKey")){
 						//getPrimaryKey 
 //						java.util.List<PrimaryKeySchemaObject> pk = new java.util.ArrayList<PrimaryKeySchemaObject>();
@@ -109,7 +141,7 @@ public class OtsObjector implements Objector {
 						sb.append("java.util.List  pk = new java.util.ArrayList ();");
 						for (Field field : key_result) {
 							Key annotationKey = field.getAnnotation(Key.class);
-							String name = annotationKey.name();
+							String name = annotationKey.value();
 							if(name.isEmpty())
 								name = field.getName();
 							sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
@@ -128,7 +160,7 @@ public class OtsObjector implements Objector {
 						//for echo refKey
 						for(Field f:refKey.keySet()){
 							Key a = refKey.get(f);
-							String name = a.name();
+							String name = a.value();
 							if(name.isEmpty())
 								name = f.getName();
 							CtMethod gets = null;
@@ -157,7 +189,7 @@ public class OtsObjector implements Objector {
 						//for echo refColumn
 						for(Field f:refColumn.keySet()){
 							Column a = refColumn.get(f);
-							String name = a.name();
+							String name = a.value();
 							if(name.isEmpty())
 								name = f.getName();
 							CtMethod gets = null;
@@ -181,7 +213,7 @@ public class OtsObjector implements Objector {
 						//for echo refKey
 						for(Field f:refKey.keySet()){
 							Key a = refKey.get(f);
-							String name = a.name();
+							String name = a.value();
 							if(name.isEmpty())
 								name = f.getName();
 							CtMethod sets = null;
@@ -204,7 +236,7 @@ public class OtsObjector implements Objector {
 						//for echo refKey
 						for(Field f:refColumn.keySet()){
 							Column a = refColumn.get(f);
-							String name = a.name();
+							String name = a.value();
 							if(name.isEmpty())
 								name = f.getName();
 							CtMethod sets = null;
@@ -232,11 +264,11 @@ public class OtsObjector implements Objector {
 				}
 			}
 //			// 为类设置方法
-//			CtMethod method = new CtMethod(CtClass.voidType, "run", null, ctClass);
-//			method.setModifiers(Modifier.PUBLIC);
-//			method.setBody("{System.out.println(\"执行结果\");}");
-//			ctClass.addMethod(method);
-//			ctClass.writeFile("target/gen/");
+			CtMethod method = new CtMethod(CtClass.voidType, "run", null, ctClass);
+			method.setModifiers(Modifier.PUBLIC);
+			method.setBody("{System.out.println(\"执行结果\");}");
+			ctClass.addMethod(method);
+			ctClass.writeFile("target/gen/");
 		} catch (NotFoundException e) {
 			e.printStackTrace();
 		} catch (CannotCompileException e) {
