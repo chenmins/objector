@@ -2,15 +2,11 @@ package org.chenmin.open.objector;
 
 import java.io.Serializable;
 
-import org.chenmin.open.objector.annotation.CapacityUnit;
 import org.chenmin.open.objector.annotation.Column;
 import org.chenmin.open.objector.annotation.Entity;
-import org.chenmin.open.objector.annotation.EntityOption;
 import org.chenmin.open.objector.annotation.Key;
 
-@Entity("USR24")
-@EntityOption(maxVersions=2)
-@CapacityUnit(readCapacityUnit=0,writeCapacityUnit=0)
+@Entity
 public class UserObject implements Serializable {
 
 	/**
