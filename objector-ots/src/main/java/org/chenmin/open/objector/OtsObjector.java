@@ -105,7 +105,10 @@ public class OtsObjector implements Objector {
 					method2.setModifiers(Modifier.PUBLIC);
 					if(method.getName().equals("getTablename")){
 						//tablename
-						method2.setBody("{return \""+entity_name+"\";}");
+						if(entity_name.isEmpty())
+							method2.setBody("{return \""+c.getSimpleName()+"\";}");
+						else
+							method2.setBody("{return \""+entity_name+"\";}");
 					}else if(method.getName().equals("readCapacityUnit")){
 						if(capacityUnit == null)
 							method2.setBody("{return 0;}");
