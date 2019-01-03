@@ -10,6 +10,7 @@ import com.alicloud.openservices.tablestore.ClientException;
 import com.alicloud.openservices.tablestore.SyncClient;
 import com.alicloud.openservices.tablestore.TableStoreException;
 import com.alicloud.openservices.tablestore.model.AlwaysRetryStrategy;
+import com.alicloud.openservices.tablestore.model.CapacityUnit;
 import com.alicloud.openservices.tablestore.model.Column;
 import com.alicloud.openservices.tablestore.model.ColumnValue;
 import com.alicloud.openservices.tablestore.model.CreateTableResponse;
@@ -27,6 +28,7 @@ import com.alicloud.openservices.tablestore.model.PrimaryKeyType;
 import com.alicloud.openservices.tablestore.model.PrimaryKeyValue;
 import com.alicloud.openservices.tablestore.model.PutRowRequest;
 import com.alicloud.openservices.tablestore.model.PutRowResponse;
+import com.alicloud.openservices.tablestore.model.ReservedThroughput;
 import com.alicloud.openservices.tablestore.model.Row;
 import com.alicloud.openservices.tablestore.model.RowDeleteChange;
 import com.alicloud.openservices.tablestore.model.RowPutChange;
@@ -107,11 +109,14 @@ public class TableStoreService implements ITableStoreService {
 			}
 		}
 		// 数据的过期时�? 单位�? -1代表永不过期. 假如设置过期时间为一�? 即为 365 * 24 * 3600.
-		int timeToLive = -1;
+		int timeToLive =table.timeToLive();
 		// 保存的最大版本数, 设置�?即代表每列上�?��保存3个最新的版本.
-		int maxVersions = 1;
+		int maxVersions = table.maxVersions();
+		int writeCapacityUnit = table.writeCapacityUnit();
+		int readCapacityUnit = table.readCapacityUnit();
 		TableOptions tableOptions = new TableOptions(timeToLive, maxVersions);
-		CreateTableRequestEx request = new CreateTableRequestEx(tableMeta, tableOptions);
+		CreateTableRequestEx request = new CreateTableRequestEx(tableMeta, tableOptions,
+				new ReservedThroughput(new CapacityUnit(readCapacityUnit, writeCapacityUnit)));
 		CreateTableResponse r = client.createTable(request);
 		return r.getRequestId() != null;
 	}
@@ -209,7 +214,9 @@ public class TableStoreService implements ITableStoreService {
 		// 读一�?
 		SingleRowQueryCriteria criteria = new SingleRowQueryCriteria(row.getTablename(), primaryKeys);
 		// 设置读取�?��版本
-		criteria.setMaxVersions(1);
+		criteria.setMaxVersions(2);
+//		TimeRange timeRange;
+//		criteria.setTimeRange(timeRange);
 		GetRowResponse getRowResponse = client.getRow(new GetRowRequest(criteria));
 		if (getRowResponse == null)
 			return false;
