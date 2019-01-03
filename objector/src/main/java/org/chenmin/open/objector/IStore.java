@@ -7,6 +7,8 @@ public interface IStore {
 	boolean exsitTable(Serializable t) throws StoreException;
 
 	boolean createTable(Serializable t) throws StoreException;
+	
+	boolean deleteTable(Serializable t) throws StoreException;
 
 	boolean save(Serializable t) throws StoreException;
 

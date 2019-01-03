@@ -14,6 +14,8 @@ public interface ITableStoreService {
 	boolean exsit(IStoreTable table);
 
 	boolean createTable(IStoreTable table);
+	
+	boolean deleteTable(IStoreTable table);
 
 	boolean init();
 
