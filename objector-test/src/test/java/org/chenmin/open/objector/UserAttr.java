@@ -9,7 +9,7 @@ import org.chenmin.open.objector.annotation.EntityOption;
 import org.chenmin.open.objector.annotation.Key;
 
 @Entity("UserAttr1")
-@EntityOption(maxVersions=2)
+@EntityOption(maxVersions=3)
 @CapacityUnit(readCapacityUnit=0,writeCapacityUnit=0)
 public class UserAttr implements Serializable {
 
