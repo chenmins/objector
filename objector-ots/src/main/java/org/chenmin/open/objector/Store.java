@@ -84,4 +84,9 @@ public class Store implements IStore {
 		return tableStoreService.createTable((IStoreTableRow) copyObject(t));
 	}
 
+	@Override
+	public boolean deleteTable(Serializable t) throws StoreException {
+		return tableStoreService.deleteTable((IStoreTableRow) copyObject(t));
+	}
+
 }
