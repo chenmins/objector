@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import com.alicloud.openservices.tablestore.ClientConfiguration;
 import com.alicloud.openservices.tablestore.ClientException;
@@ -214,50 +216,81 @@ public class TableStoreService implements ITableStoreService {
 
 	@Override
 	public boolean getRow(IStoreTableRow row) {
+		int max = 1;
+		GetRowResponse getRowResponse = getRow(row, max);
+		if(getRowResponse == null)
+			return false;
+		return getRowResponse.getRequestId() != null;
+	}
+
+	private GetRowResponse getRow(IStoreTableRow row, int max) {
 		PrimaryKey primaryKeys = buildKey(row.getPrimaryKeyValue());
 		// 读一�?
 		SingleRowQueryCriteria criteria = new SingleRowQueryCriteria(row.getTablename(), primaryKeys);
 		// 设置读取�?��版本
-		criteria.setMaxVersions(1);
+		criteria.setMaxVersions(max);
 		// TimeRange timeRange;
 		// criteria.setTimeRange(timeRange);
 		GetRowResponse getRowResponse = client.getRow(new GetRowRequest(criteria));
 		if (getRowResponse == null)
-			return false;
+			return getRowResponse;
 		Row rows = getRowResponse.getRow();
 		if (rows == null)
-			return false;
+			return null;
 		Column[] cols = rows.getColumns();
 		Map<String, ColumnValueObject> v = new LinkedHashMap<String, ColumnValueObject>();
 		for (Column c : cols) {
-			ColumnValue cv = c.getValue();
+//			ColumnValue cv = c.getValue();
 			//取出最后版本的字
-//			Column cc = rows.getLatestColumn(c.getName());
-//			ColumnValue cv = cc.getValue();
-			ColumnValueObject cvo = null;
-			switch (cv.getType()) {
-			case STRING:
-				cvo = new ColumnValueObject(cv.asString(), ColumnTypeObject.STRING);
-				break;
-			case INTEGER:
-				cvo = new ColumnValueObject(cv.asLong(), ColumnTypeObject.INTEGER);
-				break;
-			case BOOLEAN:
-				cvo = new ColumnValueObject(cv.asBoolean(), ColumnTypeObject.BOOLEAN);
-				break;
-			case DOUBLE:
-				cvo = new ColumnValueObject(cv.asDouble(), ColumnTypeObject.DOUBLE);
-				break;
-			case BINARY:
-				cvo = new ColumnValueObject(cv.asBinary(), ColumnTypeObject.BINARY);
-				break;
-
-			default:
-				break;
-			}
+			Column cc = rows.getLatestColumn(c.getName());
+			ColumnValue cv = cc.getValue();
+			ColumnValueObject cvo = covert(cv);
 			v.put(c.getName(), cvo);
 		}
 		row.setColumnValue(v);
+		return getRowResponse;
+	}
+
+	private ColumnValueObject covert(ColumnValue cv) {
+		ColumnValueObject cvo = null;
+		switch (cv.getType()) {
+		case STRING:
+			cvo = new ColumnValueObject(cv.asString(), ColumnTypeObject.STRING);
+			break;
+		case INTEGER:
+			cvo = new ColumnValueObject(cv.asLong(), ColumnTypeObject.INTEGER);
+			break;
+		case BOOLEAN:
+			cvo = new ColumnValueObject(cv.asBoolean(), ColumnTypeObject.BOOLEAN);
+			break;
+		case DOUBLE:
+			cvo = new ColumnValueObject(cv.asDouble(), ColumnTypeObject.DOUBLE);
+			break;
+		case BINARY:
+			cvo = new ColumnValueObject(cv.asBinary(), ColumnTypeObject.BINARY);
+			break;
+
+		default:
+			break;
+		}
+		return cvo;
+	}
+
+	@Override
+	public boolean getByMaxVersions(IStoreTableRow row, int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) {
+		GetRowResponse getRowResponse = getRow(row, max);
+		if(getRowResponse == null)
+			return false;
+		NavigableMap<String, NavigableMap<Long, ColumnValue>> cm = getRowResponse.getRow().getColumnsMap();
+		for(String colname:cm.keySet()){
+			NavigableMap<Long,ColumnValueObject> ccm = new TreeMap<Long,ColumnValueObject> ();
+			NavigableMap<Long,ColumnValue> accm = cm.get(colname);
+			for(Long accmTime:accm.keySet()){
+				ColumnValueObject cvo = covert(accm.get(accmTime));
+				ccm.put(accmTime, cvo);
+			}
+			columnMap.put(colname, ccm);
+		}
 		return getRowResponse.getRequestId() != null;
 	}
 

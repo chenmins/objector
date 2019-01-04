@@ -2,6 +2,7 @@ package org.chenmin.open.objector;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.NavigableMap;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -87,6 +88,11 @@ public class Store implements IStore {
 	@Override
 	public boolean deleteTable(Serializable t) throws StoreException {
 		return tableStoreService.deleteTable((IStoreTableRow) copyObject(t));
+	}
+
+	@Override
+	public boolean getByMaxVersions(Serializable t, int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) throws StoreException {
+		return tableStoreService.getByMaxVersions((IStoreTableRow) copyObject(t), max, columnMap);
 	}
 
 }
