@@ -145,9 +145,13 @@ public class OtsObjector implements Objector {
 						for (Field field : key_result) {
 							Key annotationKey = field.getAnnotation(Key.class);
 							String name = annotationKey.value();
+							boolean auto = annotationKey.auto_increment();
 							if(name.isEmpty())
 								name = field.getName();
-							sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
+							if(auto)
+								sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
+							else
+								sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+",org.chenmin.open.objector.PrimaryKeyOptionObject.AUTO_INCREMENT));");
 						}
 						sb.append("return pk;");
 						sb.append("}");
