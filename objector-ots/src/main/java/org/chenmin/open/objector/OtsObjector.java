@@ -151,14 +151,16 @@ public class OtsObjector implements Objector {
 								autoCount++;
 							if(autoCount>1)
 								throw new  CannotCompileException("表格存储目前支持多个主键，第一个主键为分区键，分区键上不允许使用主键列自增功能");
+							if(auto&&annotationKey.type()!=PrimaryKeyTypeObject.INTEGER)
+								throw new  CannotCompileException("表格存储主键列自增功能,只能是INTEGER类型");
 							if(name.isEmpty())
 								name = field.getName();
 							if(annotationKey.index()&&auto)
 								throw new  CannotCompileException("对于每张表，目前只允许设置一个主键列为自增列");
 							if(auto)
-								sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
-							else
 								sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+",org.chenmin.open.objector.PrimaryKeyOptionObject.AUTO_INCREMENT));");
+							else
+								sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
 						}
 						sb.append("return pk;");
 						sb.append("}");

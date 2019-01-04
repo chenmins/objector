@@ -1,5 +1,12 @@
 package org.chenmin.open.objector.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
+import org.chenmin.open.objector.ColumnValueObject;
 import org.chenmin.open.objector.IStore;
 import org.chenmin.open.objector.StoreException;
 import org.chenmin.open.objector.StoreFactory;
@@ -7,8 +14,6 @@ import org.chenmin.open.objector.UserAttr;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class TestUserAttr {
 	private static IStore store;
@@ -57,6 +62,13 @@ public class TestUserAttr {
 		u.setOpenid(openid);
 		u.setTelphone(telphone2);
 		assertTrue(store.update(u));
+		//查询多版本
+		t = new UserAttr();
+		t.setOpenid(openid);
+		NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap = new TreeMap<String,NavigableMap<Long,ColumnValueObject>>();
+		store.getByMaxVersions(t, 2, columnMap);
+		System.out.println(columnMap);
+		
 		t = new UserAttr();
 		t.setOpenid(openid);
 		assertTrue(store.get(t));
