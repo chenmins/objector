@@ -1,7 +1,6 @@
 package org.chenmin.open.objector;
 
-import org.chenmin.open.objector.IStoreTable;
-import org.chenmin.open.objector.IStoreTableRow;
+import java.util.NavigableMap;
 
 /**
  * 表格存储服务
@@ -26,5 +25,7 @@ public interface ITableStoreService {
 	boolean deleteRow(IStoreTableRow row);
 	
 	boolean updateRow(IStoreTableRow row);
+	
+	boolean getByMaxVersions(IStoreTableRow t,int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) ;
 	
 }
