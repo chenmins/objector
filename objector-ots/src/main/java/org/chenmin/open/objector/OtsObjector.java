@@ -142,12 +142,19 @@ public class OtsObjector implements Objector {
 						StringBuffer sb = new StringBuffer();
 						sb.append("{");
 						sb.append("java.util.List  pk = new java.util.ArrayList ();");
+						int autoCount = 0;
 						for (Field field : key_result) {
 							Key annotationKey = field.getAnnotation(Key.class);
 							String name = annotationKey.value();
 							boolean auto = annotationKey.auto_increment();
+							if(auto)
+								autoCount++;
+							if(autoCount>1)
+								throw new  CannotCompileException("表格存储目前支持多个主键，第一个主键为分区键，分区键上不允许使用主键列自增功能");
 							if(name.isEmpty())
 								name = field.getName();
+							if(annotationKey.index()&&auto)
+								throw new  CannotCompileException("对于每张表，目前只允许设置一个主键列为自增列");
 							if(auto)
 								sb.append("pk.add(new org.chenmin.open.objector.PrimaryKeySchemaObject(\""+name+"\", org.chenmin.open.objector.PrimaryKeyTypeObject."+annotationKey.type()+"));");
 							else
