@@ -20,4 +20,6 @@ public @interface Key {
 	PrimaryKeyTypeObject type() default PrimaryKeyTypeObject.STRING;
 	
 	boolean index() default false;
+	
+	boolean auto_increment() default false;
 }
