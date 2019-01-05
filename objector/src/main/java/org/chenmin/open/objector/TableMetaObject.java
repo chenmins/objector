@@ -54,4 +54,10 @@ public class TableMetaObject implements IStoreTable{
 		return 0;
 	}
 
+	@Override
+	public String autoPrimaryKey() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
