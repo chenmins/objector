@@ -4,9 +4,9 @@ import java.util.List;
 
 public interface IStoreTable {
 	
-	public String getTablename();
+	String getTablename();
 	
-	public List<PrimaryKeySchemaObject> getPrimaryKey();
+	List<PrimaryKeySchemaObject> getPrimaryKey();
 	
 	int timeToLive();
 	
@@ -17,5 +17,7 @@ public interface IStoreTable {
 	int readCapacityUnit();
 	
 	int writeCapacityUnit();
+	
+	String autoPrimaryKey();
 	
 }
