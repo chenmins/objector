@@ -15,13 +15,13 @@ public class UserBlog implements Serializable {
 	@Key(index = true)
 	private String openid;
 	@Key(auto_increment=true,type=PrimaryKeyTypeObject.INTEGER)
-	private int id;
+	private long id;
 	@Column
 	private String title;
 	@Column
 	private String body;
 	@Column(type=ColumnTypeObject.INTEGER)
-	private int readCount;
+	private long readCount;
 	
 	public String getOpenid() {
 		return openid;
@@ -29,10 +29,10 @@ public class UserBlog implements Serializable {
 	public void setOpenid(String openid) {
 		this.openid = openid;
 	}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	public String getTitle() {
@@ -47,10 +47,10 @@ public class UserBlog implements Serializable {
 	public void setBody(String body) {
 		this.body = body;
 	}
-	public int getReadCount() {
+	public long getReadCount() {
 		return readCount;
 	}
-	public void setReadCount(int readCount) {
+	public void setReadCount(long readCount) {
 		this.readCount = readCount;
 	}
 	
