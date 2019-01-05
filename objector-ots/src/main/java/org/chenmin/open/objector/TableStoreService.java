@@ -143,12 +143,12 @@ public class TableStoreService implements ITableStoreService {
 
 	@Override
 	public boolean putRow(IStoreTableRow row) {
-		return putRow(row.getTablename(), row.getPrimaryKeyValue(), row.getColumnValue());
+		return putRow(row,row.getTablename(), row.getPrimaryKeyValue(), row.getColumnValue());
 	}
 
-	public boolean putRow(String tablename, Map<String, PrimaryKeyValueObject> primaryKey,
+	private boolean putRow(IStoreTableRow row,String tablename, Map<String, PrimaryKeyValueObject> primaryKey,
 			Map<String, ColumnValueObject> column) {
-		PrimaryKey primaryKeys = buildKey(primaryKey);
+		PrimaryKey primaryKeys = buildKey(row);
 		RowPutChange rowPutChange = new RowPutChange(tablename, primaryKeys);
 		List<Column> list = covert(column);
 		for (Column c : list) {
@@ -162,7 +162,7 @@ public class TableStoreService implements ITableStoreService {
 		List<Column> list = new ArrayList<Column>();
 		for (String ck : column.keySet()) {
 			ColumnValueObject cv = column.get(ck);
-			if(cv.getValue()==null)
+			if (cv.getValue() == null)
 				continue;
 			Column c = null;
 			switch (cv.getType()) {
@@ -191,24 +191,30 @@ public class TableStoreService implements ITableStoreService {
 		return list;
 	}
 
-	private PrimaryKey buildKey(Map<String, PrimaryKeyValueObject> primaryKey) {
+	private PrimaryKey buildKey(IStoreTableRow row ) {
 		// 构�?主键
+		 Map<String, PrimaryKeyValueObject> primaryKey = row.getPrimaryKeyValue();
 		PrimaryKeyBuilder primaryKeyBuilder = PrimaryKeyBuilder.createPrimaryKeyBuilder();
 		for (String pk : primaryKey.keySet()) {
-			PrimaryKeyValueObject pkv = primaryKey.get(pk);
-			switch (pkv.getType()) {
-			case INTEGER:
-				primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromLong((Long) pkv.getValue()));
-				break;
-			case STRING:
-				primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromString((String) pkv.getValue()));
-				break;
-			case BINARY:
-				primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromBinary((byte[]) pkv.getValue()));
-				break;
-			default:
-				break;
+			if (!row.autoPrimaryKey().isEmpty() && row.autoPrimaryKey().equals(pk)) {
+				primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.AUTO_INCREMENT);
+			} else {
+				PrimaryKeyValueObject pkv = primaryKey.get(pk);
+				switch (pkv.getType()) {
+				case INTEGER:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromLong((Long) pkv.getValue()));
+					break;
+				case STRING:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromString((String) pkv.getValue()));
+					break;
+				case BINARY:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromBinary((byte[]) pkv.getValue()));
+					break;
+				default:
+					break;
+				}
 			}
+
 		}
 		PrimaryKey primaryKeys = primaryKeyBuilder.build();
 		return primaryKeys;
@@ -218,13 +224,13 @@ public class TableStoreService implements ITableStoreService {
 	public boolean getRow(IStoreTableRow row) {
 		int max = 1;
 		GetRowResponse getRowResponse = getRow(row, max);
-		if(getRowResponse == null)
+		if (getRowResponse == null)
 			return false;
 		return getRowResponse.getRequestId() != null;
 	}
 
 	private GetRowResponse getRow(IStoreTableRow row, int max) {
-		PrimaryKey primaryKeys = buildKey(row.getPrimaryKeyValue());
+		PrimaryKey primaryKeys = buildKey(row );
 		// 读一�?
 		SingleRowQueryCriteria criteria = new SingleRowQueryCriteria(row.getTablename(), primaryKeys);
 		// 设置读取�?��版本
@@ -240,8 +246,8 @@ public class TableStoreService implements ITableStoreService {
 		Column[] cols = rows.getColumns();
 		Map<String, ColumnValueObject> v = new LinkedHashMap<String, ColumnValueObject>();
 		for (Column c : cols) {
-//			ColumnValue cv = c.getValue();
-			//取出最后版本的字
+			// ColumnValue cv = c.getValue();
+			// 取出最后版本的字
 			Column cc = rows.getLatestColumn(c.getName());
 			ColumnValue cv = cc.getValue();
 			ColumnValueObject cvo = covert(cv);
@@ -277,15 +283,16 @@ public class TableStoreService implements ITableStoreService {
 	}
 
 	@Override
-	public boolean getByMaxVersions(IStoreTableRow row, int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) {
+	public boolean getByMaxVersions(IStoreTableRow row, int max,
+			NavigableMap<String, NavigableMap<Long, ColumnValueObject>> columnMap) {
 		GetRowResponse getRowResponse = getRow(row, max);
-		if(getRowResponse == null)
+		if (getRowResponse == null)
 			return false;
 		NavigableMap<String, NavigableMap<Long, ColumnValue>> cm = getRowResponse.getRow().getColumnsMap();
-		for(String colname:cm.keySet()){
-			NavigableMap<Long,ColumnValueObject> ccm = new TreeMap<Long,ColumnValueObject> ();
-			NavigableMap<Long,ColumnValue> accm = cm.get(colname);
-			for(Long accmTime:accm.keySet()){
+		for (String colname : cm.keySet()) {
+			NavigableMap<Long, ColumnValueObject> ccm = new TreeMap<Long, ColumnValueObject>();
+			NavigableMap<Long, ColumnValue> accm = cm.get(colname);
+			for (Long accmTime : accm.keySet()) {
 				ColumnValueObject cvo = covert(accm.get(accmTime));
 				ccm.put(accmTime, cvo);
 			}
@@ -296,7 +303,7 @@ public class TableStoreService implements ITableStoreService {
 
 	@Override
 	public boolean deleteRow(IStoreTableRow row) {
-		PrimaryKey primaryKeys = buildKey(row.getPrimaryKeyValue());
+		PrimaryKey primaryKeys = buildKey(row );
 		RowDeleteChange rowDeleteChange = new RowDeleteChange(row.getTablename(), primaryKeys);
 		DeleteRowResponse r = client.deleteRow(new DeleteRowRequest(rowDeleteChange));
 		return r.getRequestId() != null;
@@ -304,7 +311,7 @@ public class TableStoreService implements ITableStoreService {
 
 	@Override
 	public boolean updateRow(IStoreTableRow row) {
-		PrimaryKey primaryKeys = buildKey(row.getPrimaryKeyValue());
+		PrimaryKey primaryKeys = buildKey(row );
 		RowUpdateChange rowUpdateChange = new RowUpdateChange(row.getTablename(), primaryKeys);
 		List<Column> list = covert(row.getColumnValue());
 		for (Column c : list) {
