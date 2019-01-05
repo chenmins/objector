@@ -33,6 +33,7 @@ import com.alicloud.openservices.tablestore.model.PrimaryKeyValue;
 import com.alicloud.openservices.tablestore.model.PutRowRequest;
 import com.alicloud.openservices.tablestore.model.PutRowResponse;
 import com.alicloud.openservices.tablestore.model.ReservedThroughput;
+import com.alicloud.openservices.tablestore.model.ReturnType;
 import com.alicloud.openservices.tablestore.model.Row;
 import com.alicloud.openservices.tablestore.model.RowDeleteChange;
 import com.alicloud.openservices.tablestore.model.RowPutChange;
@@ -154,7 +155,19 @@ public class TableStoreService implements ITableStoreService {
 		for (Column c : list) {
 			rowPutChange.addColumn(c);
 		}
+		if(row.autoPrimaryKey()!=null&&!row.autoPrimaryKey().isEmpty()){
+			//这里设置返回类型为RT_PK，意思是在返回结果中包含PK列的值。如果不设置ReturnType，默认不返回。
+			rowPutChange.setReturnType(ReturnType.RT_PK);
+		}
 		PutRowResponse r = client.putRow(new PutRowRequest(rowPutChange));
+		if(row.autoPrimaryKey()!=null&&!row.autoPrimaryKey().isEmpty()){
+			Row rows = r.getRow();
+			PrimaryKey pk = rows.getPrimaryKey();
+			Map<String, PrimaryKeyValueObject> v =  new LinkedHashMap<String, PrimaryKeyValueObject>(); 
+			long id = pk.getPrimaryKeyColumn(row.autoPrimaryKey()).getValue().asLong();
+			v.put(row.autoPrimaryKey(), PrimaryKeyValueObject.fromLong(id));
+			row.setPrimaryKeyValue(v );
+		}
 		return r.getRequestId() != null;
 	}
 
@@ -196,8 +209,15 @@ public class TableStoreService implements ITableStoreService {
 		 Map<String, PrimaryKeyValueObject> primaryKey = row.getPrimaryKeyValue();
 		PrimaryKeyBuilder primaryKeyBuilder = PrimaryKeyBuilder.createPrimaryKeyBuilder();
 		for (String pk : primaryKey.keySet()) {
-			if (!row.autoPrimaryKey().isEmpty() && row.autoPrimaryKey().equals(pk)) {
-				primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.AUTO_INCREMENT);
+			if (row.autoPrimaryKey()!=null&&!row.autoPrimaryKey().isEmpty() && row.autoPrimaryKey().equals(pk)) {
+				long pkAsLong = primaryKey.get(pk).asLong();
+				if(pkAsLong==0){
+					//替换之用于新增
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.AUTO_INCREMENT);
+				}else{
+					//如果pk自增有值，则替换，用于getrow时候。
+					primaryKeyBuilder.addPrimaryKeyColumn(pk,PrimaryKeyValue.fromLong(pkAsLong));
+				}
 			} else {
 				PrimaryKeyValueObject pkv = primaryKey.get(pk);
 				switch (pkv.getType()) {

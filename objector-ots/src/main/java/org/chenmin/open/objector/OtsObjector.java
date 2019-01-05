@@ -211,7 +211,7 @@ public class OtsObjector implements Objector {
 							PrimaryKeyTypeObject type = a.type();
 							switch (type) {
 							case INTEGER:
-								ctype = "fromInt"; 
+								ctype = "fromLong"; 
 								break;
 							case STRING:
 								ctype = "fromString";
@@ -264,7 +264,7 @@ public class OtsObjector implements Objector {
 							String ctype = null;
 							switch (type) {
 							case INTEGER:
-								ctype = "fromInt";//TODO 可以是asLong
+								ctype = "fromLong";//TODO 可以是asLong
 								break;
 							case STRING:
 								ctype = "fromString";
@@ -312,7 +312,7 @@ public class OtsObjector implements Objector {
 							PrimaryKeyTypeObject type = a.type();
 							switch (type) {
 							case INTEGER:
-								ctype = "asInt"; 
+								ctype = "asLong"; 
 								break;
 							case STRING:
 								ctype = "asString";
@@ -325,7 +325,9 @@ public class OtsObjector implements Objector {
 							}
 							if(ctype==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in setPrimaryKeyValue");
-							
+							//参数非空判断
+							//if($1.containsKey(\""+name+"\"))
+							sb.append("if($1.containsKey(\""+name+"\"))");
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.PrimaryKeyValueObject)$1.get(\""+name+"\"))."+ctype+"());");
 							
 						}
@@ -357,7 +359,7 @@ public class OtsObjector implements Objector {
 							String ctype = null;
 							switch (type) {
 							case INTEGER:
-								ctype = "asInt";//TODO 可以是asLong
+								ctype = "asLong";//TODO 可以是asLong
 								break;
 							case STRING:
 								ctype = "asString";
@@ -376,6 +378,9 @@ public class OtsObjector implements Objector {
 							}
 							if(ctype==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in setColumnValue");
+							//参数非空判断
+							//if($1.containsKey(\""+name+"\"))
+							sb.append("if($1.containsKey(\""+name+"\"))");
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.ColumnValueObject)$1.get(\""+name+"\"))."+ctype+"());");
 						}
 						sb.append("}");
