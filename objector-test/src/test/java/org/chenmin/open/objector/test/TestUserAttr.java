@@ -27,10 +27,7 @@ public class TestUserAttr {
 		UserAttr u = new UserAttr();
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
-		}else{
-			store.deleteTable(u);
-			store.createTable(u);
-		}
+		} 
 	}
 
 	/**
@@ -38,6 +35,8 @@ public class TestUserAttr {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
+		UserAttr u = new UserAttr();
+		store.deleteTable(u);
 	}
 	@Test
 	public void test() throws StoreException {
@@ -68,7 +67,7 @@ public class TestUserAttr {
 		NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap = new TreeMap<String,NavigableMap<Long,ColumnValueObject>>();
 		store.getByMaxVersions(t, 2, columnMap);
 		System.out.println(columnMap);
-		
+		assertEquals(columnMap.get("telphone").size(), 2);
 		t = new UserAttr();
 		t.setOpenid(openid);
 		assertTrue(store.get(t));
