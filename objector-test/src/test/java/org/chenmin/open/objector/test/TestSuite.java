@@ -7,6 +7,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({   
 	TestUserService.class,
 	TestUserAttr.class,
+	TestUserBlog.class,
 })  
 public class TestSuite {
 
