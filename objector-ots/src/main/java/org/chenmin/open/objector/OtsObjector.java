@@ -109,6 +109,25 @@ public class OtsObjector implements Objector {
 							method2.setBody("{return \""+c.getSimpleName()+"\";}");
 						else
 							method2.setBody("{return \""+entity_name+"\";}");
+					}else if(method.getName().equals("autoPrimaryKey")){
+						//autoPrimaryKey
+						String autoKey = null;
+						for (Field field : key_result) {
+							Key annotationKey = field.getAnnotation(Key.class);
+							String name = annotationKey.value();
+							boolean auto = annotationKey.auto_increment();
+							if(auto){
+								autoKey = name;
+								if(name.isEmpty()){
+									autoKey = field.getName();
+								}
+							}
+						}
+						if(autoKey==null){
+							method2.setBody("{return null;}");
+						}else{
+							method2.setBody("{return \""+autoKey+"\";}");
+						}
 					}else if(method.getName().equals("readCapacityUnit")){
 						if(capacityUnit == null)
 							method2.setBody("{return 0;}");
@@ -187,10 +206,34 @@ public class OtsObjector implements Objector {
 							}
 							if(gets==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no getter");
-							sb.append("m.put(\""+name+"\", new org.chenmin.open.objector.PrimaryKeyValueObject(this."+gets.getName()+"(), org.chenmin.open.objector.PrimaryKeyTypeObject."+a.type()+"));");
+							//TODO 类型判断
+							String ctype = null;
+							PrimaryKeyTypeObject type = a.type();
+							switch (type) {
+							case INTEGER:
+								ctype = "fromInt"; 
+								break;
+							case STRING:
+								ctype = "fromString";
+								break;
+							case BINARY:
+								ctype= "fromBinary";
+								break;
+							default:
+								break;
+							}
+							if(ctype==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in getPrimaryKeyValue");
+//							if(f.getType().getName()=="int"){
+//								sb.append("if(this."+gets.getName()+"()!=0)");
+//							}else{
+//								sb.append("if(this."+gets.getName()+"()!=null)");
+//							}
+							sb.append("m.put(\""+name+"\",org.chenmin.open.objector.PrimaryKeyValueObject."+ctype+"(this."+gets.getName()+"()));");
 						}
 						sb.append("return m;");
 						sb.append("}");
+//						System.out.println(sb.toString());
 						method2.setBody(sb.toString());
 					}else if(method.getName().equals("getColumnValue")){
 						//getColumnValue 
@@ -210,13 +253,37 @@ public class OtsObjector implements Objector {
 								name = f.getName();
 							CtMethod gets = null;
 							for(CtMethod ctm:ctParent.getMethods()){
-								String getname = ctm.getName().toLowerCase();
-								if(getname.equals("get"+f.getName()))
+								String getname = ctm.getName();
+								if(getname.equalsIgnoreCase("get"+f.getName()))
 									gets = ctm;
 							}
 							if(gets==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no getter method");
-							sb.append("m.put(\""+name+"\", new org.chenmin.open.objector.ColumnValueObject(this."+gets.getName()+"(), org.chenmin.open.objector.ColumnTypeObject."+a.type()+"));");
+							//TODO 多类型
+							ColumnTypeObject type = a.type();
+							String ctype = null;
+							switch (type) {
+							case INTEGER:
+								ctype = "fromInt";//TODO 可以是asLong
+								break;
+							case STRING:
+								ctype = "fromString";
+								break;
+							case BOOLEAN:
+								ctype = "fromBoolean";
+								break;
+							case DOUBLE:
+								ctype = "fromDouble";
+								break;
+							case BINARY:
+								ctype= "fromBinary";
+								break;
+							default:
+								break;
+							}
+							if(ctype==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in getColumnValue");
+							sb.append("m.put(\""+name+"\",org.chenmin.open.objector.ColumnValueObject."+ctype+"(this."+gets.getName()+"()));");
 						}
 						sb.append("return m;");
 						sb.append("}");
@@ -241,9 +308,29 @@ public class OtsObjector implements Objector {
 							if(sets==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no setter");
 							//TODO 此处只有String的实现，未增加其他类型
-							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.PrimaryKeyValueObject)$1.get(\""+name+"\")).getValue().toString());");
+							String ctype = null;
+							PrimaryKeyTypeObject type = a.type();
+							switch (type) {
+							case INTEGER:
+								ctype = "asInt"; 
+								break;
+							case STRING:
+								ctype = "asString";
+								break;
+							case BINARY:
+								ctype= "asBinary";
+								break;
+							default:
+								break;
+							}
+							if(ctype==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in setPrimaryKeyValue");
+							
+							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.PrimaryKeyValueObject)$1.get(\""+name+"\"))."+ctype+"());");
+							
 						}
 						sb.append("}");
+//						System.out.println(sb);
 						method2.setBody(sb.toString());
 					}else if(method.getName().equals("setColumnValue")){
 						//setColumnValue 
@@ -253,19 +340,43 @@ public class OtsObjector implements Objector {
 						//for echo refKey
 						for(Field f:refColumn.keySet()){
 							Column a = refColumn.get(f);
+							ColumnTypeObject type = a.type();
 							String name = a.value();
 							if(name.isEmpty())
 								name = f.getName();
 							CtMethod sets = null;
 							for(CtMethod ctm:ctParent.getMethods()){
-								String getname = ctm.getName().toLowerCase();
-								if(getname.equals("set"+f.getName()))
+								String getname = ctm.getName();
+								if(getname.equalsIgnoreCase("set"+f.getName()))
 									sets = ctm;
 							}
 							if(sets==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no setter");
 							//TODO 此处只有String的实现，未增加其他类型
-							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.ColumnValueObject)$1.get(\""+name+"\")).getValue().toString());");
+							//STRING, INTEGER, BOOLEAN, DOUBLE, BINARY
+							String ctype = null;
+							switch (type) {
+							case INTEGER:
+								ctype = "asInt";//TODO 可以是asLong
+								break;
+							case STRING:
+								ctype = "asString";
+								break;
+							case BOOLEAN:
+								ctype = "asBoolean";
+								break;
+							case DOUBLE:
+								ctype = "asDouble";
+								break;
+							case BINARY:
+								ctype= "asBinary";
+								break;
+							default:
+								break;
+							}
+							if(ctype==null)
+								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in setColumnValue");
+							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.ColumnValueObject)$1.get(\""+name+"\"))."+ctype+"());");
 						}
 						sb.append("}");
 						method2.setBody(sb.toString());
