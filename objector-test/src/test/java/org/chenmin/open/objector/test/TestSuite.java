@@ -8,6 +8,7 @@ import org.junit.runners.Suite;
 	TestUserService.class,
 	TestUserAttr.class,
 	TestUserBlog.class,
+	TestUserInc.class,
 })  
 public class TestSuite {
 
