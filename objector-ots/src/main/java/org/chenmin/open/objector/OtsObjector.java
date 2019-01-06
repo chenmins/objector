@@ -229,6 +229,9 @@ public class OtsObjector implements Objector {
 //							}else{
 //								sb.append("if(this."+gets.getName()+"()!=null)");
 //							}
+							if(ctype.equals("fromLong")&&f.getType().getName().equals("long")){
+								ctype = "fromlong";
+							}
 							sb.append("m.put(\""+name+"\",org.chenmin.open.objector.PrimaryKeyValueObject."+ctype+"(this."+gets.getName()+"()));");
 						}
 						sb.append("return m;");
@@ -283,6 +286,9 @@ public class OtsObjector implements Objector {
 							}
 							if(ctype==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in getColumnValue");
+							if(ctype.equals("fromLong")&&f.getType().getName().equals("long")){
+								ctype = "fromlong";
+							}
 							sb.append("m.put(\""+name+"\",org.chenmin.open.objector.ColumnValueObject."+ctype+"(this."+gets.getName()+"()));");
 						}
 						sb.append("return m;");
@@ -327,6 +333,9 @@ public class OtsObjector implements Objector {
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in setPrimaryKeyValue");
 							//参数非空判断
 							//if($1.containsKey(\""+name+"\"))
+							if(ctype.equals("asLong")&&f.getType().getName().equals("long")){
+								ctype = "aslong";
+							}
 							sb.append("if($1.containsKey(\""+name+"\"))");
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.PrimaryKeyValueObject)$1.get(\""+name+"\"))."+ctype+"());");
 							
@@ -380,6 +389,9 @@ public class OtsObjector implements Objector {
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" is Error in setColumnValue");
 							//参数非空判断
 							//if($1.containsKey(\""+name+"\"))
+							if(ctype.equals("asLong")&&f.getType().getName().equals("long")){
+								ctype = "aslong";
+							}
 							sb.append("if($1.containsKey(\""+name+"\"))");
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.ColumnValueObject)$1.get(\""+name+"\"))."+ctype+"());");
 						}
