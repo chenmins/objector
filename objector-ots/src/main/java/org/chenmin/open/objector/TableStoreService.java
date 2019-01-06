@@ -263,6 +263,11 @@ public class TableStoreService implements ITableStoreService {
 		Row rows = getRowResponse.getRow();
 		if (rows == null)
 			return null;
+		reback(row, rows);
+		return getRowResponse;
+	}
+
+	private void reback(IStoreTableRow row, Row rows) {
 		Column[] cols = rows.getColumns();
 		Map<String, ColumnValueObject> v = new LinkedHashMap<String, ColumnValueObject>();
 		for (Column c : cols) {
@@ -274,7 +279,6 @@ public class TableStoreService implements ITableStoreService {
 			v.put(c.getName(), cvo);
 		}
 		row.setColumnValue(v);
-		return getRowResponse;
 	}
 
 	private ColumnValueObject covert(ColumnValue cv) {
@@ -345,6 +349,37 @@ public class TableStoreService implements ITableStoreService {
 	public boolean deleteTable(IStoreTable table) {
 		DeleteTableRequest request = new DeleteTableRequest(table.getTablename());
 		DeleteTableResponse r = client.deleteTable(request);
+		return r.getRequestId() != null;
+	}
+
+	@Override
+	public boolean increment(IStoreTableRow row) {
+
+//        RowUpdateChange rowUpdateChange = new RowUpdateChange(TABLE_NAME, primaryKey);
+//
+//        // 将price列值+10，不允许设置时间戳
+//        rowUpdateChange.increment(new Column("price", ColumnValue.fromLong(10)));
+//
+//        // 设置ReturnType将原子计数器的结果返回
+//        rowUpdateChange.addReturnColumn("price");
+//        rowUpdateChange.setReturnType(ReturnType.RT_AFTER_MODIFY);
+//        
+//        // 对price列发起原子计数器操作
+//        UpdateRowResponse response = client.updateRow(new UpdateRowRequest(rowUpdateChange));
+//
+//        // 打印出更新后的新值
+//        Row row = response.getRow();
+		PrimaryKey primaryKeys = buildKey(row );
+		RowUpdateChange rowUpdateChange = new RowUpdateChange(row.getTablename(), primaryKeys);
+		List<Column> list = covert(row.getColumnValue());
+		for (Column c : list) {
+			rowUpdateChange.increment(c);
+			rowUpdateChange.addReturnColumn(c.getName());
+		}
+		rowUpdateChange.setReturnType(ReturnType.RT_AFTER_MODIFY);
+		UpdateRowResponse r = client.updateRow(new UpdateRowRequest(rowUpdateChange));
+		Row rows = r.getRow();
+		reback(row, rows);
 		return r.getRequestId() != null;
 	}
 

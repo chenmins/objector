@@ -104,4 +104,18 @@ public class Store implements IStore {
 		return tableStoreService.getByMaxVersions((IStoreTableRow) copyObject(t), max, columnMap);
 	}
 
+	@Override
+	public boolean increment(Serializable t) throws StoreException {
+		IStoreTableRow copyObject = (IStoreTableRow) copyObject(t);
+		boolean row = tableStoreService.increment(copyObject);
+		try {
+			BeanUtils.copyProperties(t, copyObject);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return row;
+	}
+
 }
