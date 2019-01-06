@@ -22,16 +22,21 @@ import com.alicloud.openservices.tablestore.model.DeleteTableRequest;
 import com.alicloud.openservices.tablestore.model.DeleteTableResponse;
 import com.alicloud.openservices.tablestore.model.DescribeTableRequest;
 import com.alicloud.openservices.tablestore.model.DescribeTableResponse;
+import com.alicloud.openservices.tablestore.model.Direction;
+import com.alicloud.openservices.tablestore.model.GetRangeRequest;
+import com.alicloud.openservices.tablestore.model.GetRangeResponse;
 import com.alicloud.openservices.tablestore.model.GetRowRequest;
 import com.alicloud.openservices.tablestore.model.GetRowResponse;
 import com.alicloud.openservices.tablestore.model.PrimaryKey;
 import com.alicloud.openservices.tablestore.model.PrimaryKeyBuilder;
+import com.alicloud.openservices.tablestore.model.PrimaryKeyColumn;
 import com.alicloud.openservices.tablestore.model.PrimaryKeyOption;
 import com.alicloud.openservices.tablestore.model.PrimaryKeySchema;
 import com.alicloud.openservices.tablestore.model.PrimaryKeyType;
 import com.alicloud.openservices.tablestore.model.PrimaryKeyValue;
 import com.alicloud.openservices.tablestore.model.PutRowRequest;
 import com.alicloud.openservices.tablestore.model.PutRowResponse;
+import com.alicloud.openservices.tablestore.model.RangeRowQueryCriteria;
 import com.alicloud.openservices.tablestore.model.ReservedThroughput;
 import com.alicloud.openservices.tablestore.model.ReturnType;
 import com.alicloud.openservices.tablestore.model.Row;
@@ -210,8 +215,8 @@ public class TableStoreService implements ITableStoreService {
 		PrimaryKeyBuilder primaryKeyBuilder = PrimaryKeyBuilder.createPrimaryKeyBuilder();
 		for (String pk : primaryKey.keySet()) {
 			if (row.autoPrimaryKey()!=null&&!row.autoPrimaryKey().isEmpty() && row.autoPrimaryKey().equals(pk)) {
-				long pkAsLong = primaryKey.get(pk).asLong();
-				if(pkAsLong==0){
+				Long pkAsLong = primaryKey.get(pk).asLong();
+				if(pkAsLong==null||pkAsLong==0){
 					//替换之用于新增
 					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.AUTO_INCREMENT);
 				}else{
@@ -267,7 +272,28 @@ public class TableStoreService implements ITableStoreService {
 		return getRowResponse;
 	}
 
+	private void reback(IStoreTableRow row, PrimaryKey  rows) {
+		Map<String, PrimaryKeyColumn> pk = rows.getPrimaryKeyColumnsMap();
+		Map<String, PrimaryKeyValueObject> p = new LinkedHashMap<String, PrimaryKeyValueObject>();
+		for(String pa:pk.keySet()){
+			PrimaryKeyValueObject pvo = covert(pk.get(pa).getValue());
+			p.put(pa, pvo );
+		}
+		row.setPrimaryKeyValue(p);
+	}
+	
 	private void reback(IStoreTableRow row, Row rows) {
+		if(rows.getPrimaryKey().getDataSize()!=0){
+			//判断是否需要转换主键
+			Map<String, PrimaryKeyColumn> pk = rows.getPrimaryKey().getPrimaryKeyColumnsMap();
+			Map<String, PrimaryKeyValueObject> p = new LinkedHashMap<String, PrimaryKeyValueObject>();
+			for(String pa:pk.keySet()){
+				PrimaryKeyValueObject pvo = covert(pk.get(pa).getValue());
+				p.put(pa, pvo );
+			}
+			row.setPrimaryKeyValue(p);
+		}
+		//此处为列
 		Column[] cols = rows.getColumns();
 		Map<String, ColumnValueObject> v = new LinkedHashMap<String, ColumnValueObject>();
 		for (Column c : cols) {
@@ -279,6 +305,24 @@ public class TableStoreService implements ITableStoreService {
 			v.put(c.getName(), cvo);
 		}
 		row.setColumnValue(v);
+	}
+	
+	private PrimaryKeyValueObject covert(PrimaryKeyValue cv) {
+		PrimaryKeyValueObject cvo = null;
+		switch (cv.getType()) {
+		case STRING:
+			cvo = new PrimaryKeyValueObject(cv.asString(), PrimaryKeyTypeObject.STRING);
+			break;
+		case INTEGER:
+			cvo = new PrimaryKeyValueObject(cv.asLong(), PrimaryKeyTypeObject.INTEGER);
+			break;
+		case BINARY:
+			cvo = new PrimaryKeyValueObject(cv.asBinary(), PrimaryKeyTypeObject.BINARY);
+			break;
+		default:
+			break;
+		}
+		return cvo;
 	}
 
 	private ColumnValueObject covert(ColumnValue cv) {
@@ -381,6 +425,124 @@ public class TableStoreService implements ITableStoreService {
 		Row rows = r.getRow();
 		reback(row, rows);
 		return r.getRequestId() != null;
+	}
+
+	@Override
+	public IStoreTableRow getRange(IStoreTableRow start, IStoreTableRow end,List<IStoreTableRow> range,boolean asc,int limit)
+			throws StoreException {
+		RangeRowQueryCriteria rangeRowQueryCriteria = new RangeRowQueryCriteria(start.getTablename());
+
+        // 设置起始主键
+        PrimaryKeyBuilder primaryKeyBuilder = PrimaryKeyBuilder.createPrimaryKeyBuilder();
+        Map<String, PrimaryKeyValueObject> s1 = start.getPrimaryKeyValue();
+        for(String pk:start.getPrimaryKeyValue().keySet()){
+        	PrimaryKeyValueObject pkv = s1.get(pk);
+        	if(pkv.getValue()!=null){
+        		switch (pkv.getType()) {
+				case INTEGER:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromLong((Long) pkv.getValue()));
+					break;
+				case STRING:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromString((String) pkv.getValue()));
+					break;
+				case BINARY:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromBinary((byte[]) pkv.getValue()));
+					break;
+				default:
+					break;
+				}
+        	}else{
+        		 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MIN);
+        	}
+        }
+        rangeRowQueryCriteria.setInclusiveStartPrimaryKey(primaryKeyBuilder.build());
+
+        // 设置结束主键
+        primaryKeyBuilder = PrimaryKeyBuilder.createPrimaryKeyBuilder();
+        Map<String, PrimaryKeyValueObject> s2 = end.getPrimaryKeyValue();
+        for(String pk:start.getPrimaryKeyValue().keySet()){
+        	PrimaryKeyValueObject pkv = s2.get(pk);
+        	if(pkv.getValue()!=null){
+        		switch (pkv.getType()) {
+				case INTEGER:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromLong((Long) pkv.getValue()));
+					break;
+				case STRING:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromString((String) pkv.getValue()));
+					break;
+				case BINARY:
+					primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.fromBinary((byte[]) pkv.getValue()));
+					break;
+				default:
+					break;
+				}
+        	}else{
+        		 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MAX);
+        	}
+        }
+        rangeRowQueryCriteria.setExclusiveEndPrimaryKey(primaryKeyBuilder.build());
+        rangeRowQueryCriteria.setLimit(limit);
+        if(asc){
+        	 rangeRowQueryCriteria.setDirection(Direction.FORWARD);
+        }else{
+        	 rangeRowQueryCriteria.setDirection(Direction.BACKWARD);
+        }
+        rangeRowQueryCriteria.setMaxVersions(1);
+        System.out.println("GetRange的结果为:");
+        GetRangeResponse getRangeResponse =null;
+        getRangeResponse = client.getRange(new GetRangeRequest(rangeRowQueryCriteria));
+        for (Row row : getRangeResponse.getRows()) {
+        	
+        	try {
+				IStoreTableRow a = start.getClass().newInstance();
+				reback(a ,row);
+				range.add(a);
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+//            System.out.println(row);
+        }
+        // 若nextStartPrimaryKey不为null, 则继续读取.
+        IStoreTableRow next = null;
+		try {
+			next = start.getClass().newInstance();
+			if (getRangeResponse.getNextStartPrimaryKey() != null) {
+				reback(next ,getRangeResponse.getNextStartPrimaryKey());
+			}else{
+				next = null;
+			}
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+//        while (true) {
+//            getRangeResponse = client.getRange(new GetRangeRequest(rangeRowQueryCriteria));
+//            for (Row row : getRangeResponse.getRows()) {
+//            	
+//            	try {
+//					IStoreTableRow a = start.getClass().newInstance();
+//					reback(a ,row);
+//					range.add(a);
+//				} catch (InstantiationException e) {
+//					e.printStackTrace();
+//				} catch (IllegalAccessException e) {
+//					e.printStackTrace();
+//				}
+//                System.out.println(row);
+//            }
+//            // 若nextStartPrimaryKey不为null, 则继续读取.
+//            if (getRangeResponse.getNextStartPrimaryKey() != null) {
+//                rangeRowQueryCriteria.setInclusiveStartPrimaryKey(getRangeResponse.getNextStartPrimaryKey());
+//            } else {
+//                break;
+//            }
+//        }
+        return next;
 	}
 
 }
