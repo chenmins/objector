@@ -19,6 +19,8 @@ public interface IStore {
 
 	boolean update(Serializable t) throws StoreException;
 	
+	boolean increment(Serializable t) throws StoreException;
+	
 	boolean getByMaxVersions(Serializable t,int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) throws StoreException;
 	
 	Objector getObjector() ;
