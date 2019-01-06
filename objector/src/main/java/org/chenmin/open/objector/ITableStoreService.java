@@ -28,4 +28,5 @@ public interface ITableStoreService {
 	
 	boolean getByMaxVersions(IStoreTableRow t,int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) ;
 	
+	boolean increment(IStoreTableRow t);
 }
