@@ -2,6 +2,8 @@ package org.chenmin.open.objector;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NavigableMap;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -116,6 +118,45 @@ public class Store implements IStore {
 			e.printStackTrace();
 		}
 		return row;
+	}
+
+	@Override
+	public Serializable getRange(Serializable start, Serializable end,List<Serializable> range,boolean asc,int limit)
+			throws StoreException {
+		IStoreTableRow s = (IStoreTableRow) copyObject(start);
+		IStoreTableRow e = (IStoreTableRow) copyObject(end);
+		List<IStoreTableRow> r = new ArrayList<IStoreTableRow>();
+		IStoreTableRow n = tableStoreService.getRange(s, e, r,asc,limit);
+		Serializable next = null;
+		if(n==null){
+			next = null;
+		}else{
+			try {
+				next = start.getClass().newInstance();
+				BeanUtils.copyProperties(next, n);
+			} catch (IllegalAccessException e1) {
+				e1.printStackTrace();
+			} catch (InvocationTargetException e1) {
+				e1.printStackTrace();
+			} catch (InstantiationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		try {
+			for(IStoreTableRow rr:r){
+				Serializable r1 = start.getClass().newInstance();
+				BeanUtils.copyProperties(r1, rr);
+				range.add(r1);
+			}
+		} catch (InstantiationException e1) {
+			e1.printStackTrace();
+		} catch (IllegalAccessException e1) {
+			e1.printStackTrace();
+		} catch (InvocationTargetException e1) {
+			e1.printStackTrace();
+		}
+		return next;
 	}
 
 }
