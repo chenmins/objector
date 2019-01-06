@@ -23,11 +23,18 @@ public class ColumnValueObject {
 		return (String) this.value;
 	}
 
-	public long asLong() {
+	public long aslong() {
 		if (this.type != ColumnTypeObject.INTEGER) {
 			throw new IllegalStateException("The type of column is not INTEGER.");
 		}
 		return ((Long) this.value).longValue();
+	}
+	
+	public Long asLong() {
+		if (this.type != ColumnTypeObject.INTEGER) {
+			throw new IllegalStateException("The type of column is not INTEGER.");
+		}
+		return ((Long) this.value);
 	}
 
 	public int asInt() {
@@ -62,7 +69,11 @@ public class ColumnValueObject {
 		return new ColumnValueObject(value, ColumnTypeObject.STRING);
 	}
 
-	public static ColumnValueObject fromLong(long value) {
+	public static ColumnValueObject fromLong(Long value) {
+		return new ColumnValueObject(value, ColumnTypeObject.INTEGER);
+	}
+	
+	public static ColumnValueObject fromlong(long value) {
 		return new ColumnValueObject(Long.valueOf(value), ColumnTypeObject.INTEGER);
 	}
 
