@@ -15,7 +15,11 @@ public class PrimaryKeyValueObject {
 		return new PrimaryKeyValueObject(value, PrimaryKeyTypeObject.STRING);
 	}
 
-	public static PrimaryKeyValueObject fromLong(long value) {
+	public static PrimaryKeyValueObject fromLong(Long value) {
+		return new PrimaryKeyValueObject(value, PrimaryKeyTypeObject.INTEGER);
+	}
+	
+	public static PrimaryKeyValueObject fromlong(long value) {
 		return new PrimaryKeyValueObject(Long.valueOf(value), PrimaryKeyTypeObject.INTEGER);
 	}
 
@@ -38,11 +42,18 @@ public class PrimaryKeyValueObject {
 		return (String) this.value;
 	}
 
-	public long asLong() {
+	public long aslong() {
 		if (this.type != PrimaryKeyTypeObject.INTEGER) {
 			throw new IllegalStateException("The type of primary key is not INTEGER.");
 		}
 		return ((Long) this.value).longValue();
+	}
+	
+	public Long asLong() {
+		if (this.type != PrimaryKeyTypeObject.INTEGER) {
+			throw new IllegalStateException("The type of primary key is not INTEGER.");
+		}
+		return ((Long) this.value);
 	}
 
 	public int asInt() {
