@@ -32,8 +32,8 @@ public class TestUserInc {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-//		UserInc u = new UserInc();
-//		store.deleteTable(u);
+		UserInc u = new UserInc();
+		store.deleteTable(u);
 	}
 	@Test
 	public void test() throws StoreException {

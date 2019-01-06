@@ -15,7 +15,7 @@ public class UserBlog implements Serializable {
 	@Key(index = true)
 	private String openid;
 	@Key(auto_increment=true,type=PrimaryKeyTypeObject.INTEGER)
-	private long id;
+	private Long id;
 	@Column
 	private String title;
 	@Column
@@ -29,10 +29,10 @@ public class UserBlog implements Serializable {
 	public void setOpenid(String openid) {
 		this.openid = openid;
 	}
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getTitle() {
