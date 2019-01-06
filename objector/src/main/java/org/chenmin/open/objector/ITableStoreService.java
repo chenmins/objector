@@ -1,5 +1,6 @@
 package org.chenmin.open.objector;
 
+import java.util.List;
 import java.util.NavigableMap;
 
 /**
@@ -29,4 +30,7 @@ public interface ITableStoreService {
 	boolean getByMaxVersions(IStoreTableRow t,int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) ;
 	
 	boolean increment(IStoreTableRow t);
+	
+	IStoreTableRow getRange(IStoreTableRow start,IStoreTableRow end,List<IStoreTableRow> range,boolean asc,int limit) throws StoreException;
+
 }

@@ -1,6 +1,7 @@
 package org.chenmin.open.objector;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.NavigableMap;
 
 public interface IStore {
@@ -21,6 +22,8 @@ public interface IStore {
 	
 	boolean increment(Serializable t) throws StoreException;
 	
+	Serializable getRange(Serializable start,Serializable end,List<Serializable> range,boolean asc,int limit) throws StoreException;
+	
 	boolean getByMaxVersions(Serializable t,int max,NavigableMap<String,NavigableMap<Long,ColumnValueObject>> columnMap) throws StoreException;
 	
 	Objector getObjector() ;
@@ -30,6 +33,5 @@ public interface IStore {
 	ITableStoreService getTableStoreService();
 
 	void setTableStoreService(ITableStoreService tableStoreService);
-
 
 }
