@@ -452,7 +452,12 @@ public class TableStoreService implements ITableStoreService {
 					break;
 				}
         	}else{
-        		 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MIN);
+        		if(asc){
+        			 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MIN);
+        		}else{
+        			 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MAX);
+        		}
+        		
         	}
         }
         rangeRowQueryCriteria.setInclusiveStartPrimaryKey(primaryKeyBuilder.build());
@@ -477,7 +482,11 @@ public class TableStoreService implements ITableStoreService {
 					break;
 				}
         	}else{
-        		 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MAX);
+        		 if(asc){
+        			 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MAX);
+        		}else{
+        			 primaryKeyBuilder.addPrimaryKeyColumn(pk, PrimaryKeyValue.INF_MIN);
+        		}
         	}
         }
         rangeRowQueryCriteria.setExclusiveEndPrimaryKey(primaryKeyBuilder.build());
