@@ -11,10 +11,7 @@ Objector 是一个简单的对象创建器。
 目前采用阿里云的**表格存储**实现，详情见
 [https://www.aliyun.com/product/ots](https://www.aliyun.com/product/ots)
 待此版本稳定后，将提供其他实现方式如**MongoDB**
-
-## [](#download-install)安装方式Install for Download
-
-完整包下载 [lib.0.0.3.zip](assets/download/lib.0.0.3.zip)
+ 
 
 ## [](#maven-install)安装方式Install for Maven
 
@@ -24,7 +21,7 @@ Objector 是一个简单的对象创建器。
 <dependency>
 		<groupId>org.chenmin.open</groupId>
 		<artifactId>objector-ots</artifactId>
-		<version>0.0.3</version>
+		<version>0.2.1</version>
 </dependency>
 ```
 
@@ -62,23 +59,7 @@ public class UserObject implements Serializable {
 
 }
 ```
-
-### with Guice Example @Inject
-
-[详细源码 点此进入](https://github.com/chenmins/objector/blob/master/objector-test/src/test/java/org/chenmin/open/objector/ServiceModule.java)
-
-```java
-public class ServiceModule extends AbstractModule {
-
-	@Override
-	protected void configure() {
-		bind(ITableStoreService.class).to(TableStoreService.class);
-		bind(IStore.class).to(Store.class);
-		bind(Objector.class).to(OtsObjector.class);
-	}
-
-}
-```
+ 
 
 ### CRUD for junit test 
 
@@ -88,7 +69,6 @@ public class ServiceModule extends AbstractModule {
 ```java
 public class TestUserService {
 
-	private static Injector injector;
 	private static IStore store;
 
 	/**
@@ -97,12 +77,11 @@ public class TestUserService {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		//初始化Guice容器
-		injector = Guice.createInjector(new ServiceModule());
-		store = injector.getInstance(IStore.class);
+		store =StoreFactory.create();
 		UserObject u = new UserObject();
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
-		}
+		} 
 	}
 
 	@Test
