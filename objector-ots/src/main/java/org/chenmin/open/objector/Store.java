@@ -121,7 +121,8 @@ public class Store implements IStore {
 	}
 
 	@Override
-	public Serializable getRange(Serializable start, Serializable end,List<Serializable> range,boolean asc,int limit)
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public <T extends Serializable> T getRange(Serializable start,Serializable end,List<? extends Serializable> range,boolean asc,int limit)
 			throws StoreException {
 		IStoreTableRow s = (IStoreTableRow) copyObject(start);
 		IStoreTableRow e = (IStoreTableRow) copyObject(end);
@@ -139,16 +140,18 @@ public class Store implements IStore {
 			} catch (InvocationTargetException e1) {
 				e1.printStackTrace();
 			} catch (InstantiationException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
 		try {
+			List list =new ArrayList();
 			for(IStoreTableRow rr:r){
 				Serializable r1 = start.getClass().newInstance();
 				BeanUtils.copyProperties(r1, rr);
-				range.add(r1);
+				list.add(r1);
 			}
+			//此处为消除代码编译检测，刻意为之，如有好方法，建议重构
+			range.addAll(list);
 		} catch (InstantiationException e1) {
 			e1.printStackTrace();
 		} catch (IllegalAccessException e1) {
@@ -156,7 +159,7 @@ public class Store implements IStore {
 		} catch (InvocationTargetException e1) {
 			e1.printStackTrace();
 		}
-		return next;
+		return (T) next;
 	}
 
 }
