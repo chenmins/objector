@@ -48,7 +48,7 @@ public class TestUserBlogRange{
 			u.setOpenid(openid);
 			u.setTitle(title+":"+i);
 			u.setBody(body);
-//			assertTrue(store.save(u));
+			assertTrue(store.save(u));
 		}
 		UserBlog start = new UserBlog();
 //		start.setOpenid(openid);
@@ -57,8 +57,8 @@ public class TestUserBlogRange{
 		int limit=3;
 		UserBlog next = null;
 		while(true){
-			List<Serializable> range= new ArrayList<Serializable>();
-			next = (UserBlog) store.getRange(start, end , range,true, limit);
+			List<UserBlog> range= new ArrayList<UserBlog>();
+			next = store.getRange(start, end , range,true, limit);
 //			System.out.println(range);
 			for(Serializable sa:range){
 				UserBlog s = (UserBlog) sa;
