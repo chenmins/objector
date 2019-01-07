@@ -8,7 +8,7 @@ Document is
 	<dependency>
 			<groupId>org.chenmin.open</groupId>
 			<artifactId>objector-ots</artifactId>
-			<version>0.1.0</version>
+			<version>0.2.1</version>
 	</dependency>
 ```
 ## Useage 
