@@ -24,6 +24,8 @@ public class TestUserInc {
 		if (!store.exsitTable(u)) {
 			store.createTable(u);
 		} 
+		//避免[ErrorCode]:OTSPartitionUnavailable, [Message]:The partition is not available., 
+				Thread.sleep(2000);
 	}
 	
 
