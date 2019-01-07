@@ -1,5 +1,9 @@
 package org.chenmin.open.objector;
-
+/**
+ * 列属性
+ * @author Chenmin
+ *
+ */
 public class ColumnObject {
 	private String name;
 	private byte[] nameRawData;
