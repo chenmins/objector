@@ -123,8 +123,9 @@ public class TableStoreService implements ITableStoreService {
 		// 保存的最大版本数, 设置�?即代表每列上�?��保存3个最新的版本.
 		int maxVersions = table.maxVersions();
 		int writeCapacityUnit = table.writeCapacityUnit();
+		long maxTimeDeviation = table.maxTimeDeviation();
 		int readCapacityUnit = table.readCapacityUnit();
-		TableOptions tableOptions = new TableOptions(timeToLive, maxVersions);
+		TableOptions tableOptions = new TableOptions(timeToLive, maxVersions,maxTimeDeviation);
 		CreateTableRequestEx request = new CreateTableRequestEx(tableMeta, tableOptions,
 				new ReservedThroughput(new CapacityUnit(readCapacityUnit, writeCapacityUnit)));
 		CreateTableResponse r = client.createTable(request);
