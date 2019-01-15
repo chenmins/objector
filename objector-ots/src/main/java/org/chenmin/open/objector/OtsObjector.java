@@ -22,7 +22,8 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 public class OtsObjector implements Objector {
 	
-	private static HashMap<String,CtClass > classMap = new HashMap<String,CtClass >();
+	@SuppressWarnings("rawtypes")
+	private static HashMap<String,Class > classMap = new HashMap<String,Class >();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -32,11 +33,10 @@ public class OtsObjector implements Objector {
 		try {
 			if(!classMap.containsKey(c.getName())){
 				ctClass = createEntity(c);
-				classMap.put(c.getName(), ctClass);
 				clazz = ctClass.toClass();
+				classMap.put(c.getName(), clazz);
 			}else{
-				ctClass = classMap.get(c.getName());
-				clazz =Class.forName(ctClass.getName());
+				clazz = classMap.get(c.getName());
 			}
 			Object obj = clazz.newInstance();
 			return (T) obj;
@@ -46,9 +46,7 @@ public class OtsObjector implements Objector {
 			e.printStackTrace();
 		} catch (CannotCompileException e) {
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+		}  
 		return null;
 	}
 
