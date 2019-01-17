@@ -21,7 +21,7 @@ Objector 是一个简单的对象创建器。
 <dependency>
 		<groupId>org.chenmin.open</groupId>
 		<artifactId>objector-ots</artifactId>
-		<version>0.2.3</version>
+		<version>0.2.4</version>
 </dependency>
 ```
 
