@@ -20,6 +20,10 @@ public class UserInc implements Serializable {
 	private Long readCount;
 	@Column(type=ColumnTypeObject.INTEGER)
 	private long writeCount;
+	@Column(type=ColumnTypeObject.BOOLEAN)
+	private boolean lock;
+	@Column(type=ColumnTypeObject.BOOLEAN)
+	private Boolean valid;
 	public String getOpenid() {
 		return openid;
 	}
@@ -38,5 +42,18 @@ public class UserInc implements Serializable {
 	public void setWriteCount(long writeCount) {
 		this.writeCount = writeCount;
 	}
+	public boolean isLock() {
+		return lock;
+	}
+	public void setLock(boolean lock) {
+		this.lock = lock;
+	}
+	public Boolean getValid() {
+		return valid;
+	}
+	public void setValid(Boolean valid) {
+		this.valid = valid;
+	}
+	 
 
 }

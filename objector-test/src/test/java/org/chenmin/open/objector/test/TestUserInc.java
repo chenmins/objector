@@ -42,10 +42,13 @@ public class TestUserInc {
 		UserInc u = new UserInc();
 		String openid = "chenmins";
 		u.setOpenid(openid);
+		u.setLock(Boolean.FALSE);
+		u.setValid(true);
 		assertTrue(store.save(u));
 		assertTrue(store.get(u));
 		assertEquals(u.getReadCount(), null);
 		assertEquals(u.getWriteCount(), 0);
+		u.setValid(null);
 		u.setReadCount(10L);
 		u.setWriteCount(5);
 		assertTrue(store.increment(u));
