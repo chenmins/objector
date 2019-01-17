@@ -55,7 +55,14 @@ public class ColumnValueObject {
 		return ((Double) this.value).doubleValue();
 	}
 
-	public boolean asBoolean() {
+	public Boolean asBoolean() {
+		if (this.type != ColumnTypeObject.BOOLEAN) {
+			throw new IllegalStateException("The type of column is not BOOLEAN.");
+		}
+		return (Boolean) this.value ;
+	}
+	
+	public boolean asboolean() {
 		if (this.type != ColumnTypeObject.BOOLEAN) {
 			throw new IllegalStateException("The type of column is not BOOLEAN.");
 		}
@@ -96,6 +103,10 @@ public class ColumnValueObject {
 
 	public static ColumnValueObject fromBoolean(boolean value) {
 		return new ColumnValueObject(Boolean.valueOf(value), ColumnTypeObject.BOOLEAN);
+	}
+
+	public static ColumnValueObject fromBoolean(Boolean value) {
+		return new ColumnValueObject( value, ColumnTypeObject.BOOLEAN);
 	}
 
 	public byte[] getRawData() {
