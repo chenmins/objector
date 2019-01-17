@@ -125,7 +125,12 @@ public class TableStoreService implements ITableStoreService {
 		int writeCapacityUnit = table.writeCapacityUnit();
 		long maxTimeDeviation = table.maxTimeDeviation();
 		int readCapacityUnit = table.readCapacityUnit();
-		TableOptions tableOptions = new TableOptions(timeToLive, maxVersions,maxTimeDeviation);
+		TableOptions tableOptions = null;
+		if(maxTimeDeviation==0){
+			tableOptions = new TableOptions(timeToLive, maxVersions);
+		}else{
+			tableOptions = new TableOptions(timeToLive, maxVersions,maxTimeDeviation);
+		}
 		CreateTableRequestEx request = new CreateTableRequestEx(tableMeta, tableOptions,
 				new ReservedThroughput(new CapacityUnit(readCapacityUnit, writeCapacityUnit)));
 		CreateTableResponse r = client.createTable(request);
