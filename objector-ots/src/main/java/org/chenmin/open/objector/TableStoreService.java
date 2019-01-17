@@ -14,6 +14,7 @@ import com.alicloud.openservices.tablestore.TableStoreException;
 import com.alicloud.openservices.tablestore.model.AlwaysRetryStrategy;
 import com.alicloud.openservices.tablestore.model.CapacityUnit;
 import com.alicloud.openservices.tablestore.model.Column;
+import com.alicloud.openservices.tablestore.model.ColumnType;
 import com.alicloud.openservices.tablestore.model.ColumnValue;
 import com.alicloud.openservices.tablestore.model.CreateTableResponse;
 import com.alicloud.openservices.tablestore.model.DeleteRowRequest;
@@ -423,8 +424,12 @@ public class TableStoreService implements ITableStoreService {
 		RowUpdateChange rowUpdateChange = new RowUpdateChange(row.getTablename(), primaryKeys);
 		List<Column> list = covert(row.getColumnValue());
 		for (Column c : list) {
-			rowUpdateChange.increment(c);
-			rowUpdateChange.addReturnColumn(c.getName());
+//			仅支持Integer类型。
+//			作为原子计数器的列，若写入前该列不存在，则默认值为0。若写入前该列已存在且列值为非Integer类型，则抛出OTSParameterInvalid错误。
+			if(c.getValue().getType().equals(ColumnType.INTEGER)){
+				rowUpdateChange.increment(c);
+				rowUpdateChange.addReturnColumn(c.getName());
+			}
 		}
 		rowUpdateChange.setReturnType(ReturnType.RT_AFTER_MODIFY);
 		UpdateRowResponse r = client.updateRow(new UpdateRowRequest(rowUpdateChange));
