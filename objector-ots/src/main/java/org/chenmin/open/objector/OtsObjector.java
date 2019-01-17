@@ -202,6 +202,12 @@ public class OtsObjector implements Objector {
 								if(getname.equals("get"+f.getName()))
 									gets = ctm;
 							}
+							//TODO 未判断Boolean类型为 isXXX()
+							for(CtMethod ctm:ctParent.getMethods()){
+								String getname = ctm.getName().toLowerCase();
+								if(getname.equals("is"+f.getName()))
+									gets = ctm;
+							}
 							if(gets==null)
 								throw new CannotCompileException(c.getName()+"."+f.getName()+" has no getter");
 							//TODO 类型判断
@@ -256,6 +262,12 @@ public class OtsObjector implements Objector {
 							for(CtMethod ctm:ctParent.getMethods()){
 								String getname = ctm.getName();
 								if(getname.equalsIgnoreCase("get"+f.getName()))
+									gets = ctm;
+							}
+							//TODO 未判断Boolean类型为 isXXX()
+							for(CtMethod ctm:ctParent.getMethods()){
+								String getname = ctm.getName().toLowerCase();
+								if(getname.equals("is"+f.getName()))
 									gets = ctm;
 							}
 							if(gets==null)
@@ -334,6 +346,9 @@ public class OtsObjector implements Objector {
 							if(ctype.equals("asLong")&&f.getType().getName().equals("long")){
 								ctype = "aslong";
 							}
+							if(ctype.equals("asBoolean")&&f.getType().getName().equals("boolean")){
+								ctype = "asboolean";
+							}
 							sb.append("if($1.containsKey(\""+name+"\"))");
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.PrimaryKeyValueObject)$1.get(\""+name+"\"))."+ctype+"());");
 							
@@ -390,10 +405,14 @@ public class OtsObjector implements Objector {
 							if(ctype.equals("asLong")&&f.getType().getName().equals("long")){
 								ctype = "aslong";
 							}
+							if(ctype.equals("asBoolean")&&f.getType().getName().equals("boolean")){
+								ctype = "asboolean";
+							}
 							sb.append("if($1.containsKey(\""+name+"\"))");
 							sb.append("this."+sets.getName()+"(((org.chenmin.open.objector.ColumnValueObject)$1.get(\""+name+"\"))."+ctype+"());");
 						}
 						sb.append("}");
+//						System.out.println("111------"+sb.toString());
 						method2.setBody(sb.toString());
 					}else{
 						//未实现 做空

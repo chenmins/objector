@@ -6,9 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableMap;
 
+import org.apache.commons.beanutils.BeanIntrospector;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.PropertyUtils;
 
 public class Store implements IStore {
+	static{
+		BeanIntrospector a = new BooleanIntrospector();
+		BeanUtilsBean.getInstance().getPropertyUtils().addBeanIntrospector(a );
+	}
+
+
 
 	protected Objector objector;
 	
@@ -38,11 +47,14 @@ public class Store implements IStore {
 	protected Serializable copyObject(Serializable user) {
 		try {
 			Serializable userObject = createObject(user);
+//			PropertyUtils.copyProperties(userObject, user);
 			BeanUtils.copyProperties(userObject, user);
 			return userObject;
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch ( Exception e) {
 			e.printStackTrace();
 		}
 		return null;
