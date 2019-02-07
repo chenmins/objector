@@ -508,7 +508,7 @@ public class TableStoreService implements ITableStoreService {
         	 rangeRowQueryCriteria.setDirection(Direction.BACKWARD);
         }
         rangeRowQueryCriteria.setMaxVersions(1);
-        System.out.println("GetRange的结果为:");
+//        System.out.println("GetRange的结果为:");
         GetRangeResponse getRangeResponse =null;
         getRangeResponse = client.getRange(new GetRangeRequest(rangeRowQueryCriteria));
         for (Row row : getRangeResponse.getRows()) {
