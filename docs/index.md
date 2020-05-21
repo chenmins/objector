@@ -76,7 +76,6 @@ public class TestUserService {
 	 */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		//初始化Guice容器
 		store =StoreFactory.create();
 		UserObject u = new UserObject();
 		if (!store.exsitTable(u)) {
