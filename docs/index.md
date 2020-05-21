@@ -6,7 +6,7 @@ layout: default
 
 Objector 是一个简单的对象创建器。
 
-主要支持普通的Pojo对象通过@@annotation方式进行字节码增强，将对象直接持久化的微型框架。
+主要支持普通的Pojo对象通过@annotation方式进行字节码增强，将对象直接持久化的微型框架。
 
 目前采用阿里云的**表格存储**实现，详情见
 [https://www.aliyun.com/product/ots](https://www.aliyun.com/product/ots)
