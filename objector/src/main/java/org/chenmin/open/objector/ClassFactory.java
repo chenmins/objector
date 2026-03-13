@@ -7,7 +7,10 @@ import java.util.ServiceLoader;
  * @author Chenmin
  *
  */
-public class ClassFactory {
+public final class ClassFactory {
+
+	private ClassFactory() {
+	}
 
 	/**
 	 * 创建接口的实现
@@ -18,9 +21,10 @@ public class ClassFactory {
 		@SuppressWarnings("unchecked")
 		ServiceLoader<T> serviceLoader = (ServiceLoader<T>) ServiceLoader.load(c);
 		Iterator<T> it = serviceLoader.iterator();
-		if (it.hasNext())
+		if (it.hasNext()) {
 			return it.next();
-		return null;
+		}
+		throw new IllegalStateException("No SPI implementation found for " + c.getName());
 	}
 
 }

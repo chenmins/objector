@@ -3,10 +3,11 @@ package org.chenmin.open.objector;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.chenmin.open.objector.annotation.CapacityUnit;
 import org.chenmin.open.objector.annotation.Column;
@@ -22,8 +23,7 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 public class OtsObjector implements Objector {
 	
-	@SuppressWarnings("rawtypes")
-	private static HashMap<String,Class > classMap = new HashMap<String,Class >();
+	private static final Map<String, Class<?>> CLASS_MAP = new ConcurrentHashMap<String, Class<?>>();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -31,23 +31,18 @@ public class OtsObjector implements Objector {
 		CtClass ctClass = null;
 		Class<?> clazz = null;
 		try {
-			if(!classMap.containsKey(c.getName())){
+			if(!CLASS_MAP.containsKey(c.getName())){
 				ctClass = createEntity(c);
 				clazz = ctClass.toClass();
-				classMap.put(c.getName(), clazz);
+				CLASS_MAP.put(c.getName(), clazz);
 			}else{
-				clazz = classMap.get(c.getName());
+				clazz = CLASS_MAP.get(c.getName());
 			}
-			Object obj = clazz.newInstance();
+			Object obj = clazz.getDeclaredConstructor().newInstance();
 			return (T) obj;
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (CannotCompileException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new IllegalStateException("Failed to create enhanced entity for " + c.getName(), e);
 		}  
-		return null;
 	}
 
 	private CtClass createEntity(Class<? extends Serializable> c) {

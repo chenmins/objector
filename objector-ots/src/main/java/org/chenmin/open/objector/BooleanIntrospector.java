@@ -31,9 +31,13 @@ public class BooleanIntrospector implements BeanIntrospector{
 
     private Method getWriteMethod(Class<?> clazz, String propertyName){
         try {
-            return clazz.getMethod("get" + WordUtils.capitalize(propertyName));
+            return clazz.getMethod("set" + WordUtils.capitalize(propertyName), Boolean.class);
         } catch (NoSuchMethodException e) {
-            return null;
+            try {
+                return clazz.getMethod("set" + WordUtils.capitalize(propertyName), Boolean.TYPE);
+            } catch (NoSuchMethodException ex) {
+                return null;
+            }
         }
     }
 }
